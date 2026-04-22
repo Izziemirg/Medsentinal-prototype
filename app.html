@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedSentinel · ADR Surveillance · BUS 7214 Team 9</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --border: #e5e7eb;
+  --border2: #d1d5db;
+  --text: #111827;
+  --text2: #374151;
+  --text3: #6b7280;
+  --text4: #9ca3af;
+  --accent: #1d4ed8;
+  --accent-h: #1e40af;
+  --accent-light: #eff6ff;
+  --accent-mid: #bfdbfe;
+  --nav: #1e2d4f;
+  --nav-hover: #2d3f6a;
+  --nav-active: #2563eb;
+  --critical: #dc2626; --crit-bg: #fef2f2; --crit-border: #fecaca; --crit-ring: rgba(220,38,38,0.15);
+  --high: #ea580c; --high-bg: #fff7ed; --high-border: #fed7aa;
+  --medium: #d97706; --med-bg: #fffbeb; --med-border: #fde68a;
+  --low: #16a34a; --low-bg: #f0fdf4; --low-border: #bbf7d0;
+  --green: #16a34a;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07),0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08),0 4px 6px -2px rgba(0,0,0,0.04);
+  --radius: 8px;
+  --sans: 'Inter', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;font-size:14px;line-height:1.5;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ════ NAV SIDEBAR ════ */
+.nav-sidebar{width:72px;background:var(--nav);display:flex;flex-direction:column;align-items:center;padding:12px 0;flex-shrink:0;z-index:100;}
+.nav-logo{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;cursor:pointer;}
+.nav-logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.5;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;width:56px;padding:8px 4px;border-radius:8px;cursor:pointer;transition:all 0.15s;margin-bottom:4px;color:#8ba4c8;border:2px solid transparent;}
+.nav-item:hover{background:var(--nav-hover);color:#c5d5ed;}
+.nav-item.active{background:rgba(37,99,235,0.2);color:#fff;border-color:rgba(37,99,235,0.4);}
+.nav-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;}
+.nav-item span{font-size:9px;font-weight:600;letter-spacing:0.03em;text-align:center;line-height:1.2;}
+.nav-bottom{margin-top:auto;}
+
+/* ════ MAIN AREA ════ */
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* top bar shared */
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;box-shadow:var(--shadow);}
+.topbar-logo{font-size:18px;font-weight:800;color:var(--accent);letter-spacing:-0.02em;}
+.topbar-divider{width:1px;height:20px;background:var(--border);}
+.topbar-title{font-size:16px;font-weight:700;color:var(--text);}
+.topbar-sub{font-size:12px;color:var(--text3);}
+.topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.notif-btn{width:36px;height:36px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;}
+.notif-btn svg{width:18px;height:18px;fill:none;stroke:var(--text3);stroke-width:1.8;}
+.notif-badge{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid var(--white);}
+.user-chip{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:#334155;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.user-name{font-size:13px;font-weight:600;color:var(--text);}
+.user-role{font-size:11px;color:var(--text3);}
+
+/* ════ SCREENS ════ */
+.screen{display:none;flex:1;min-height:0;overflow:hidden;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ════ SHARED COMPONENTS ════ */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.btn{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-h);}
+.btn-outline{background:var(--white);color:var(--text2);border:1px solid var(--border2);}
+.btn-outline:hover{background:var(--bg);}
+.badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:0.04em;}
+.badge-HIGH{background:var(--crit-bg);color:var(--critical);border:1px solid var(--crit-border);}
+.badge-MEDIUM{background:var(--med-bg);color:var(--medium);border:1px solid var(--med-border);}
+.badge-LOW{background:var(--low-bg);color:var(--low);border:1px solid var(--low-border);}
+.score-ring{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;flex-shrink:0;}
+.score-ring-num{font-size:15px;font-weight:800;line-height:1;}
+.score-ring-label{font-size:8px;font-weight:700;letter-spacing:0.06em;margin-top:1px;}
+.sev-bar{height:8px;background:linear-gradient(90deg,#16a34a 0%,#d97706 40%,#ea580c 70%,#dc2626 100%);border-radius:4px;position:relative;margin:6px 0 2px;}
+.sev-marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--text);border:3px solid var(--white);box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+.sev-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text4);}
+.tag{font-size:11px;font-weight:500;padding:3px 10px;border-radius:14px;background:var(--bg);border:1px solid var(--border);color:var(--text2);}
+.section-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+.hl-red{background:#fee2e2;color:#b91c1c;border-radius:3px;padding:0 3px;}
+.hl-orange{background:#ffedd5;color:#c2410c;border-radius:3px;padding:0 3px;}
+.hl-yellow{background:#fef9c3;color:#92400e;border-radius:3px;padding:0 3px;}
+
+/* sparkline svg */
+.sparkline{overflow:visible;}
+
+/* ════════════════════
+   TAB 1: INTERVIEW
+════════════════════ */
+.interview-content{flex:1;overflow-y:auto;padding:28px 32px;background:var(--bg);}
+.interview-header-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:22px;box-shadow:var(--shadow);}
+.interview-status-chip{display:inline-flex;align-items:center;gap:6px;background:#fef9c3;border:1px solid #fde68a;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:#92400e;margin-bottom:14px;}
+.interview-status-dot{width:8px;height:8px;border-radius:50%;background:#d97706;}
+.interview-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:22px;}
+.interview-meta-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:var(--shadow);}
+.interview-meta-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.interview-meta-val{font-size:15px;font-weight:600;color:var(--text);}
+.interview-meta-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.interview-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px;}
+.placeholder-section{background:var(--white);border:1px dashed var(--border2);border-radius:10px;padding:32px;text-align:center;margin-bottom:16px;}
+.placeholder-section-icon{font-size:32px;margin-bottom:10px;opacity:0.4;}
+.placeholder-section-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.placeholder-section-sub{font-size:13px;color:var(--text3);line-height:1.6;max-width:480px;margin:0 auto;}
+.q-placeholder{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;}
+.q-num{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.q-text{font-size:13px;color:var(--text2);}
+.q-answer-box{background:var(--white);border:1px dashed var(--border2);border-radius:6px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--text4);font-style:italic;}
+
+/* ════════════════════
+   TAB 2: ARCHITECTURE
+════════════════════ */
+.arch-layout{flex:1;display:grid;grid-template-columns:1fr 300px;min-height:0;overflow:hidden;}
+.arch-canvas{padding:24px 28px;overflow-y:auto;background:var(--bg);}
+.fn-bar{display:flex;border-bottom:1px solid var(--border);background:var(--white);flex-shrink:0;}
+.fn-card{flex:1;padding:11px 14px;cursor:pointer;border-right:1px solid var(--border);position:relative;transition:all 0.15s;}
+.fn-card:last-child{border-right:none;}
+.fn-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:transparent;transition:background 0.15s;}
+.fn-card.active::after{background:var(--accent);}
+.fn-card:hover{background:#f8fafc;}
+.fn-card.active{background:var(--accent-light);}
+.fn-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.08em;margin-bottom:2px;}
+.fn-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.fn-desc{font-size:10px;color:var(--text3);line-height:1.4;}
+.fn-card.active .fn-title{color:var(--accent);}
+.fn-card.active .fn-lbl{color:var(--accent);}
+.canvas-lbl{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.canvas-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-bottom:22px;}
+.pipeline::before{content:'';position:absolute;top:45%;left:10%;right:10%;height:1px;background:var(--border2);z-index:0;}
+.pipe-col{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:1;padding:0 5px;animation:fadeUp 0.4s ease both;}
+.pipe-col:nth-child(1){animation-delay:.05s}.pipe-col:nth-child(2){animation-delay:.1s}.pipe-col:nth-child(3){animation-delay:.15s}.pipe-col:nth-child(4){animation-delay:.2s}.pipe-col:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.pipe-col-lbl{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;text-align:center;margin-bottom:3px;}
+.pipe-node{width:100%;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:10px 9px;cursor:pointer;transition:all 0.18s;text-align:center;box-shadow:var(--shadow);}
+.pipe-node:hover{border-color:var(--accent-mid);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.pipe-node.active{border-color:var(--accent);background:var(--accent-light);}
+.pipe-node.star{border-color:#bfdbfe;}
+.pipe-node-num{font-size:9px;font-weight:600;color:var(--text4);letter-spacing:0.08em;margin-bottom:4px;}
+.pipe-node-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.3;}
+.pipe-node-sub{font-size:10px;color:var(--text3);line-height:1.3;}
+.star-pill{display:inline-block;margin-top:4px;font-size:9px;font-weight:600;color:var(--accent);background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:3px;padding:1px 5px;}
+.sources-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.src-node{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all 0.18s;box-shadow:var(--shadow);}
+.src-node:hover{border-color:var(--accent-mid);box-shadow:var(--shadow-md);}
+.src-tag{font-size:9px;font-weight:700;letter-spacing:0.08em;padding:2px 7px;border-radius:3px;margin-bottom:6px;display:inline-block;}
+.tag-formal{background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;}
+.tag-voc{background:#fef9c3;color:#92400e;border:1px solid #fde68a;}
+.src-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.src-desc{font-size:10px;color:var(--text3);}
+.gov-bar{background:#f0fdf4;border:1px dashed #86efac;border-radius:var(--radius);padding:11px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;}
+.arch-detail-panel{background:var(--white);border-left:1px solid var(--border);padding:20px 18px;overflow-y:auto;}
+.ad-tag{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.ad-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:5px;}
+.ad-sub{font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.spec-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.spec-row:last-child{border-bottom:none;}
+.spec-k{color:var(--text3);}
+.spec-v{font-size:11px;font-weight:600;color:var(--text);}
+.spec-v.good{color:var(--green);}
+.spec-v.warn{color:var(--medium);}
+.attr-list{list-style:none;}
+.attr-list li{display:flex;align-items:flex-start;gap:7px;padding:4px 0;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);line-height:1.4;}
+.attr-list li:last-child{border-bottom:none;}
+.attr-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0;}
+.ad-section{margin-bottom:14px;}
+.ad-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+
+/* ════════════════════
+   TAB 3: TRIAGE QUEUE (C1)
+════════════════════ */
+.triage-body{flex:1;display:flex;min-height:0;overflow:hidden;}
+.triage-filters{width:240px;background:var(--white);border-right:1px solid var(--border);padding:18px 16px;overflow-y:auto;flex-shrink:0;}
+.filter-section{margin-bottom:20px;}
+.filter-title{font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.filter-clear{font-size:11px;font-weight:500;color:var(--accent);cursor:pointer;}
+.filter-check-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;cursor:pointer;}
+.filter-check-item input{width:14px;height:14px;accent-color:var(--accent);}
+.filter-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.filter-check-label{flex:1;color:var(--text2);}
+.filter-check-count{font-size:11px;color:var(--text3);font-weight:500;}
+.filter-date-input{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);background:var(--white);font-family:var(--sans);}
+.save-filter-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--border2);border-radius:6px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;background:var(--white);margin-top:12px;width:100%;justify-content:center;}
+.triage-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.triage-toolbar{padding:12px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.triage-count{font-size:13px;color:var(--text3);}
+.sort-select{padding:6px 28px 6px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);background:var(--white);cursor:pointer;font-family:var(--sans);appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+.triage-table-header{display:grid;grid-template-columns:90px 1fr 160px 130px 90px 30px;gap:10px;padding:9px 20px;background:var(--white);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;}
+.triage-rows{flex:1;overflow-y:auto;}
+.triage-row{display:grid;grid-template-columns:90px 1fr 160px 130px 90px 30px;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;background:var(--white);transition:background 0.12s;}
+.triage-row:hover{background:#f8fafc;}
+.triage-row:last-child{border-bottom:none;}
+.score-circle{width:56px;height:56px;border-radius:50%;border:2px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.score-circle-num{font-size:15px;font-weight:800;line-height:1;}
+.score-circle-label{font-size:8px;font-weight:700;letter-spacing:0.06em;margin-top:2px;}
+.drug-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.drug-reaction{font-size:12px;color:var(--text3);margin-bottom:4px;}
+.drug-snippet{font-size:11px;color:var(--text3);background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 8px;display:inline-block;}
+.src-icons{display:flex;gap:4px;align-items:center;}
+.src-icon{width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1px solid var(--border);}
+.src-more{font-size:11px;color:var(--text3);font-weight:600;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 5px;}
+.triage-date{font-size:12px;color:var(--text3);}
+.triage-score{font-size:18px;font-weight:800;}
+.triage-arrow{color:var(--text3);}
+.triage-pagination{padding:12px 20px;border-top:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.page-btn{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--white);color:var(--text2);}
+.page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.page-btn:hover:not(.active){background:var(--bg);}
+
+/* ════════════════════
+   TAB 4: CASE CARD (C2)
+════════════════════ */
+.case-body{flex:1;overflow-y:auto;padding:20px;background:var(--bg);display:grid;grid-template-columns:1fr 1fr 340px;grid-template-rows:auto 1fr auto;gap:16px;}
+.case-header-card{grid-column:1/-1;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.2fr 1.2fr 1.4fr 1fr 1fr;gap:0;}
+.case-hdr-section{padding:0 18px;border-right:1px solid var(--border);}
+.case-hdr-section:first-child{padding-left:0;}
+.case-hdr-section:last-child{border-right:none;}
+.case-hdr-label{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:4px;}
+.case-hdr-val{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;}
+.case-hdr-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.case-demographics{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);overflow-y:auto;}
+.case-narrative{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);overflow-y:auto;}
+.case-score-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);overflow-y:auto;}
+.case-entities{grid-column:1/3;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.case-similar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.case-actions{grid-column:1/-1;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);}
+.demo-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.demo-row:last-child{border-bottom:none;}
+.demo-k{color:var(--text3);}
+.demo-v{font-weight:500;color:var(--text2);}
+.serious-badge{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;}
+.narrative-source{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.src-reddit{width:24px;height:24px;border-radius:50%;background:#ff4500;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+.src-fda{width:24px;height:24px;border-radius:4px;background:#1a3a6b;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;}
+.src-fb{width:24px;height:24px;border-radius:50%;background:#1877f2;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;}
+.src-webmd{width:24px;height:24px;border-radius:4px;background:#0070c0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:700;}
+.src-label{font-size:12px;font-weight:600;color:var(--text);}
+.src-sub{font-size:11px;color:var(--text3);}
+.narrative-text{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.ai-note{background:#fefce8;border:1px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:11px;color:#92400e;display:flex;align-items:flex-start;gap:7px;}
+.shap-bar-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.shap-bar-row:last-child{border-bottom:none;}
+.shap-label{font-size:12px;color:var(--text2);flex:1;}
+.shap-track{height:10px;border-radius:5px;overflow:hidden;flex:2;}
+.shap-fill{height:100%;border-radius:5px;}
+.shap-val-num{font-size:12px;font-weight:700;width:30px;text-align:right;}
+.entity-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.entity-tag{font-size:11px;padding:3px 9px;border-radius:14px;background:var(--bg);border:1px solid var(--border);color:var(--text2);}
+.similar-row{display:grid;grid-template-columns:1fr 50px 50px 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center;}
+.similar-row:last-child{border-bottom:none;}
+.similar-row.header{font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:0.06em;}
+
+/* ════════════════════
+   TAB 5: ADR OVERVIEW (C3)
+════════════════════ */
+.overview-topbar{padding:16px 22px 0;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;}
+.overview-title-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.overview-drug-title{font-size:20px;font-weight:800;color:var(--text);}
+.overview-meta{font-size:12px;color:var(--text3);margin-bottom:12px;}
+.overview-stat-row{display:grid;grid-template-columns:160px 180px repeat(3,1fr);border-top:1px solid var(--border);background:var(--white);}
+.stat-cell{padding:14px 18px;border-right:1px solid var(--border);}
+.stat-cell:last-child{border-right:none;}
+.stat-cell-lbl{font-size:11px;font-weight:500;color:var(--text3);margin-bottom:4px;}
+.stat-cell-val{font-size:22px;font-weight:800;color:var(--text);line-height:1.1;}
+.stat-cell-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.overview-body{flex:1;overflow-y:auto;padding:20px;background:var(--bg);}
+.overview-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:16px;}
+.signal-summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.ss-text{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;}
+.ss-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+.ss-stat{text-align:center;padding:10px;}
+.ss-stat-icon{font-size:16px;margin-bottom:4px;}
+.ss-stat-val{font-size:18px;font-weight:800;color:var(--text);}
+.ss-stat-lbl{font-size:10px;color:var(--text3);line-height:1.3;}
+.ai-insight{background:#fefce8;border:1px solid #fde68a;border-radius:6px;padding:10px 12px;display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:12px;color:#78350f;}
+.chart-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.chart-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.chart-title{font-size:14px;font-weight:700;color:var(--text);}
+.chart-legend{display:flex;gap:12px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);}
+.legend-dot{width:12px;height:3px;border-radius:2px;}
+.chart-area{height:160px;position:relative;}
+.chart-svg{width:100%;height:100%;}
+.sources-section{margin-bottom:16px;}
+.sources-cards-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
+.source-contrib-card{min-width:200px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);flex-shrink:0;cursor:pointer;transition:all 0.15s;}
+.source-contrib-card:hover{border-color:var(--accent-mid);box-shadow:var(--shadow-md);}
+.sc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sc-name{font-size:13px;font-weight:700;color:var(--text);}
+.sc-count{font-size:11px;color:var(--text3);}
+.sc-sparkline{height:30px;margin-bottom:8px;}
+.sc-themes{font-size:11px;color:var(--text3);}
+.sc-theme-item{padding:1px 0;}
+.sc-view-link{font-size:11px;font-weight:500;color:var(--accent);margin-top:8px;display:block;cursor:pointer;}
+.similar-signals-table{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.sim-row{display:grid;grid-template-columns:1fr 100px 140px 80px 130px;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);align-items:center;font-size:13px;}
+.sim-row:last-child{border-bottom:none;}
+.sim-row.header{font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:0.06em;}
+
+/* ════════════════════
+   TAB 6: COPILOT (C4)
+════════════════════ */
+.copilot-layout{flex:1;display:grid;grid-template-columns:1fr 300px;min-height:0;overflow:hidden;}
+.copilot-main{overflow-y:auto;padding:20px;background:var(--bg);}
+.copilot-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;background:var(--white);border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;}
+.c-tab{padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all 0.15s;}
+.c-tab:hover{color:var(--text2);}
+.c-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.key-evidence-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:16px;}
+.evidence-posts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.evidence-post{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.ep-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ep-meta{font-size:11px;color:var(--text3);}
+.ep-text{font-size:12px;color:var(--text2);line-height:1.6;}
+.ep-footer{display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--text3);}
+.ep-stat{display:flex;align-items:center;gap:4px;}
+.ep-dots{display:flex;gap:4px;justify-content:center;margin-top:10px;}
+.ep-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);}
+.ep-dot.active{background:var(--accent);}
+.copilot-panel{background:var(--white);border-left:1px solid var(--border);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.copilot-header{display:flex;align-items:center;justify-content:space-between;}
+.copilot-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;}
+.beta-chip{font-size:10px;font-weight:600;background:#eff6ff;color:var(--accent);border:1px solid var(--accent-mid);border-radius:10px;padding:2px 7px;}
+.copilot-rec-box{background:var(--crit-bg);border:1px solid var(--crit-border);border-radius:8px;padding:12px;}
+.copilot-rec-eyebrow{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.08em;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.copilot-rec-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.copilot-rec-sub{font-size:12px;color:var(--text2);line-height:1.5;}
+.rationale-section{font-size:12px;}
+.rationale-title{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:7px;}
+.rationale-item{display:flex;align-items:flex-start;gap:7px;padding:4px 0;color:var(--text2);border-bottom:1px solid var(--border);font-size:12px;}
+.rationale-item:last-child{border-bottom:none;}
+.rationale-check{width:16px;height:16px;border-radius:50%;background:var(--accent-light);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.suggested-actions .action-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:6px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all 0.15s;font-size:13px;color:var(--text2);background:var(--white);}
+.suggested-actions .action-row:hover{background:var(--bg);border-color:var(--border2);}
+.action-icon{font-size:14px;}
+.similar-sigs-section{}
+.sim-sig-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.sim-sig-row:last-child{border-bottom:none;}
+.feedback-btn{padding:10px;border:1px solid var(--border2);border-radius:8px;background:var(--white);font-size:13px;color:var(--text2);cursor:pointer;text-align:center;width:100%;font-family:var(--sans);}
+.feedback-btn:hover{background:var(--bg);}
+.chat-input-area{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.chat-input{width:100%;border:none;outline:none;font-size:12px;color:var(--text2);font-family:var(--sans);resize:none;min-height:50px;}
+.chat-input-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+
+/* ════════════════════
+   TAB 7: REPORT BUILDER (C5)
+════════════════════ */
+.report-topbar-extra{display:flex;align-items:center;gap:8px;margin-left:16px;}
+.report-body{flex:1;display:grid;grid-template-columns:1fr 280px;min-height:0;overflow:hidden;}
+.report-form-area{overflow-y:auto;padding:20px;background:var(--bg);}
+.report-steps{display:flex;align-items:center;gap:0;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin-bottom:18px;box-shadow:var(--shadow);}
+.rstep{display:flex;align-items:center;gap:8px;}
+.rstep-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.rstep-label{font-size:13px;font-weight:500;}
+.rstep-connector{flex:1;height:1px;background:var(--border2);margin:0 12px;}
+.report-form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+.form-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.form-card-title{font-size:15px;font-weight:700;color:var(--text);}
+.form-card-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;}
+.form-label .required{color:var(--critical);}
+.form-input,.form-select{padding:8px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);background:var(--white);font-family:var(--sans);width:100%;}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.reaction-tags{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--border2);border-radius:6px;min-height:40px;}
+.reaction-tag{display:flex;align-items:center;gap:4px;background:#fee2e2;border:1px solid #fecaca;border-radius:14px;padding:3px 10px;font-size:12px;font-weight:500;color:#b91c1c;}
+.reaction-tag-x{cursor:pointer;font-size:14px;line-height:1;}
+.add-reaction-btn{font-size:12px;color:var(--accent);font-weight:500;cursor:pointer;padding:3px 0;border:none;background:transparent;font-family:var(--sans);}
+.summary-textarea{width:100%;padding:10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text2);font-family:var(--sans);resize:none;height:80px;line-height:1.6;}
+.summary-count{font-size:11px;color:var(--text4);text-align:right;margin-top:4px;}
+.tags-area{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--border2);border-radius:6px;}
+.ai-tag{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:3px 10px;font-size:12px;color:var(--text2);}
+.report-sidebar{background:var(--white);border-left:1px solid var(--border);padding:18px;overflow-y:auto;}
+.confidence-gauge{text-align:center;padding:14px 0 10px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.gauge-svg{width:120px;height:70px;}
+.gauge-score{font-size:28px;font-weight:800;color:var(--critical);}
+.gauge-label{font-size:12px;color:var(--green);font-weight:500;}
+.src-evidence-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.src-evidence-item:last-child{border-bottom:none;}
+.src-ev-info{flex:1;}
+.src-ev-name{font-weight:600;color:var(--text);}
+.src-ev-type{font-size:10px;color:var(--text3);}
+.src-ev-count{font-size:11px;color:var(--text3);}
+.view-link{font-size:11px;font-weight:500;color:var(--accent);cursor:pointer;}
+.ready-box{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:10px 12px;font-size:12px;color:#15803d;display:flex;gap:7px;align-items:flex-start;}
+.bottom-note{padding:10px 20px;border-top:1px solid var(--border);background:var(--white);font-size:11px;color:var(--text3);flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<!-- NAV SIDEBAR -->
+<nav class="nav-sidebar">
+  <div class="nav-logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="nav-item active" onclick="switchTab('interview',this)">
+    <svg viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Interview</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('arch',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Arch.</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('triage',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Triage</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('case',this)">
+    <svg viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Case</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('overview',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Overview</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('copilot',this)">
+    <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Copilot</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('report',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Report</span>
+  </div>
+</nav>
+
+<!-- MAIN AREA -->
+<div class="main-area">
+
+<!-- ══════════════════════════════
+     TAB 1: INTERVIEW
+══════════════════════════════ -->
+<div class="screen active" id="screen-interview">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <div class="topbar-divider"></div>
+    <div><div class="topbar-title">Pharmacist Interview</div><div class="topbar-sub">Expert user research · ADR surveillance workflow</div></div>
+    <div class="topbar-right">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge"></div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <div class="interview-content">
+    <div class="interview-header-card">
+      <div class="interview-status-chip"><div class="interview-status-dot"></div>Scheduled — Interview Pending</div>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--text)">Expert Interview: Pharmacist Perspective on ADR Surveillance</h2>
+      <p style="font-size:14px;color:var(--text3);line-height:1.6;max-width:720px">This section will document the findings from a structured interview with a licensed pharmacist. The goal is to understand real-world ADR reporting workflows, pain points, and validation of the MedSentinel concept. Results, summary, and key insights will be populated here post-interview.</p>
+    </div>
+    <div class="interview-grid">
+      <div class="interview-meta-card"><div class="interview-icon" style="background:#eff6ff">👤</div><div class="interview-meta-label">Interviewee</div><div class="interview-meta-val">Licensed Pharmacist</div><div class="interview-meta-sub">Clinical setting · TBD</div></div>
+      <div class="interview-meta-card"><div class="interview-icon" style="background:#f0fdf4">📅</div><div class="interview-meta-label">Interview Date</div><div class="interview-meta-val">To Be Scheduled</div><div class="interview-meta-sub">Est. duration: 30–45 min</div></div>
+      <div class="interview-meta-card"><div class="interview-icon" style="background:#fefce8">🎯</div><div class="interview-meta-label">Research Focus</div><div class="interview-meta-val">ADR Reporting Workflow</div><div class="interview-meta-sub">Pain points · Tool validation</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div>
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text)">Planned Interview Questions</h3>
+        <div class="q-placeholder"><div class="q-num">Q1</div><div class="q-text">How do you currently identify and report potential adverse drug reactions in your daily workflow?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+        <div class="q-placeholder"><div class="q-num">Q2</div><div class="q-text">What are the biggest challenges you face with current ADR surveillance tools (e.g., FAERS, MedWatch)?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+        <div class="q-placeholder"><div class="q-num">Q3</div><div class="q-text">How do you currently assess the severity or urgency of a potential ADR signal?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+        <div class="q-placeholder"><div class="q-num">Q4</div><div class="q-text">Do you currently consider patient-reported sources (social media, forums) as valid signal inputs? Why or why not?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+        <div class="q-placeholder"><div class="q-num">Q5</div><div class="q-text">How would an AI-powered severity triage tool change your workflow, if at all? What would you need to trust it?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+      </div>
+      <div>
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text)">Post-Interview Sections</h3>
+        <div class="placeholder-section"><div class="placeholder-section-icon">📋</div><div class="placeholder-section-title">Interview Summary</div><div class="placeholder-section-sub">A structured summary of key themes, quotes, and insights from the pharmacist interview will appear here after the session is conducted.</div></div>
+        <div class="placeholder-section"><div class="placeholder-section-icon">💡</div><div class="placeholder-section-title">Key Findings & Design Implications</div><div class="placeholder-section-sub">Specific findings that validate or challenge MedSentinel design decisions will be documented here, with direct links to concept directions they inform.</div></div>
+        <div class="placeholder-section" style="margin-bottom:0"><div class="placeholder-section-icon">🗣️</div><div class="placeholder-section-title">Notable Quotes</div><div class="placeholder-section-sub">Verbatim quotes from the pharmacist that capture critical user needs or pain points will be highlighted here.</div></div>
+      </div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px 22px;box-shadow:var(--shadow)">
+      <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">Interview Methodology</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">🎙️</div><div style="font-size:12px;font-weight:600;color:var(--text)">Semi-Structured</div><div style="font-size:11px;color:var(--text3)">Open-ended questions with guided follow-ups</div></div>
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">⏱️</div><div style="font-size:12px;font-weight:600;color:var(--text)">30–45 Minutes</div><div style="font-size:11px;color:var(--text3)">Remote or in-person session</div></div>
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">🔒</div><div style="font-size:12px;font-weight:600;color:var(--text)">Confidential</div><div style="font-size:11px;color:var(--text3)">Anonymized for academic use</div></div>
+        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">📊</div><div style="font-size:12px;font-weight:600;color:var(--text)">Thematic Analysis</div><div style="font-size:11px;color:var(--text3)">Coded into design implications</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 2: ARCHITECTURE
+══════════════════════════════ -->
+<div class="screen" id="screen-arch">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <div class="topbar-divider"></div>
+    <div><div class="topbar-title">System Architecture</div><div class="topbar-sub">End-to-end data flow · ingestion → severity model → governance</div></div>
+    <div class="topbar-right">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge"></div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <div class="fn-bar">
+    <div class="fn-card active" onclick="setFn(0,this)"><div class="fn-lbl">F1</div><div class="fn-title">Ingest data</div><div class="fn-desc">Multi-source · real-time</div></div>
+    <div class="fn-card" onclick="setFn(1,this)"><div class="fn-lbl">F2</div><div class="fn-title">Assess severity</div><div class="fn-desc">Accurate · explainable</div></div>
+    <div class="fn-card" onclick="setFn(2,this)"><div class="fn-lbl">F3</div><div class="fn-title">Display insights</div><div class="fn-desc">Digestible · hierarchical</div></div>
+    <div class="fn-card" onclick="setFn(3,this)"><div class="fn-lbl">F4</div><div class="fn-title">Respond</div><div class="fn-desc">Low latency · reliable</div></div>
+    <div class="fn-card" onclick="setFn(4,this)"><div class="fn-lbl">F5</div><div class="fn-title">Governance</div><div class="fn-desc">Auditable · compliant</div></div>
+  </div>
+  <div class="arch-layout">
+    <div class="arch-canvas">
+      <div class="canvas-lbl">fig-01 · MedSentinel end-to-end pipeline · click any node to inspect</div>
+      <div class="pipeline">
+        <div class="pipe-col"><div class="pipe-col-lbl">01 · Ingest</div><div class="pipe-node" onclick="showAD('ingest')" id="node-ingest"><div class="pipe-node-num">STEP 0</div><div class="pipe-node-title">Data Sources</div><div class="pipe-node-sub">FAERS · MedWatch · WebMD · Reddit</div></div></div>
+        <div class="pipe-col"><div class="pipe-col-lbl">02 · Store</div><div class="pipe-node" onclick="showAD('store')" id="node-store"><div class="pipe-node-num">STEP 1</div><div class="pipe-node-title">Unified Data Lake</div><div class="pipe-node-sub">raw · staged · curated</div></div></div>
+        <div class="pipe-col">
+          <div class="pipe-col-lbl">03 · Assess</div>
+          <div class="pipe-node" onclick="showAD('nlp')" id="node-nlp" style="margin-bottom:8px"><div class="pipe-node-num">STEP 2</div><div class="pipe-node-title">NLP + MedDRA</div><div class="pipe-node-sub">lay → clinical</div></div>
+          <div class="pipe-node" onclick="showAD('features')" id="node-features" style="margin-bottom:8px"><div class="pipe-node-num">STEP 3</div><div class="pipe-node-title">Feature Extraction</div><div class="pipe-node-sub">drug · reaction · context</div></div>
+          <div class="pipe-node star" onclick="showAD('severity')" id="node-severity"><div class="pipe-node-num">STEP 4 ★</div><div class="pipe-node-title">Severity Model</div><div class="pipe-node-sub">0–1 · CI · evidence</div><div class="star-pill">GBDT + TRANSFORMER</div></div>
+        </div>
+        <div class="pipe-col">
+          <div class="pipe-col-lbl">04 · Respond</div>
+          <div class="pipe-node" onclick="showAD('api')" id="node-api" style="margin-bottom:8px"><div class="pipe-node-num">STEP 5</div><div class="pipe-node-title">Response API</div><div class="pipe-node-sub">&lt;2s · ADR export</div></div>
+          <div class="pipe-node star" onclick="showAD('triage_ui')" id="node-triage_ui"><div class="pipe-node-num">STEP 6 ★</div><div class="pipe-node-title">Triage UI</div><div class="pipe-node-sub">priority queue · XAI</div><div class="star-pill">FDA REVIEWER</div></div>
+        </div>
+        <div class="pipe-col"><div class="pipe-col-lbl">05 · Governance</div><div class="pipe-node star" onclick="showAD('gov')" id="node-gov"><div class="pipe-node-num">STEP 7 · CROSS-CUTTING</div><div class="pipe-node-title">Governance Layer</div><div class="pipe-node-sub">audit · RBAC · HIPAA</div><div class="star-pill">COMPLIANCE</div></div></div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px">Data Sources <div style="flex:1;height:1px;background:var(--border)"></div></div>
+      <div class="sources-grid">
+        <div class="src-node" onclick="showAD('faers')"><div class="src-tag tag-formal">FORMAL</div><div class="src-name">FAERS</div><div class="src-desc">Structured · FDA adverse events</div></div>
+        <div class="src-node" onclick="showAD('medwatch')"><div class="src-tag tag-formal">FORMAL</div><div class="src-name">MedWatch</div><div class="src-desc">Semi-structured · voluntary reports</div></div>
+        <div class="src-node" onclick="showAD('webmd')"><div class="src-tag tag-voc">INFORMAL · VoC</div><div class="src-name">WebMD</div><div class="src-desc">Unstructured · patient reviews</div></div>
+        <div class="src-node" onclick="showAD('reddit')"><div class="src-tag tag-voc">INFORMAL · VoC</div><div class="src-name">Reddit / Forums</div><div class="src-desc">Unstructured · community voice</div></div>
+      </div>
+      <div class="gov-bar" onclick="showAD('gov')">
+        <span style="font-size:11px;font-weight:700;color:#16a34a;letter-spacing:0.08em;white-space:nowrap">05 · GOVERNANCE LAYER</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2px 8px">audit trail</span>
+          <span style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2px 8px">RBAC</span>
+          <span style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2px 8px">HIPAA</span>
+          <span style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2px 8px">model cards</span>
+          <span style="font-size:11px;color:var(--text3);background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2px 8px">bias monitoring</span>
+        </div>
+      </div>
+    </div>
+    <div class="arch-detail-panel" id="arch-detail-panel"><div style="text-align:center;padding:50px 16px;color:var(--text3);font-size:13px"><div style="font-size:32px;margin-bottom:10px;opacity:.3">⬡</div>Click any node to inspect its specification</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 3: TRIAGE QUEUE (C1)
+══════════════════════════════ -->
+<div class="screen" id="screen-triage">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <div class="topbar-divider"></div>
+    <div>
+      <div style="display:flex;align-items:center;gap:6px"><div class="topbar-title">Triage Queue</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="topbar-sub">Ranked by Severity (High → Low)</div>
+    </div>
+    <div style="flex:1;max-width:400px;margin:0 20px;position:relative">
+      <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:none;stroke:#9ca3af;stroke-width:2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input style="width:100%;padding:8px 36px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-family:var(--sans);color:var(--text2);background:var(--bg)" placeholder="Search drugs, reactions, keywords, case IDs...">
+      <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text4);background:var(--border);border-radius:3px;padding:1px 5px;font-weight:600">/</span>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge"></div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <div class="triage-body">
+    <div class="triage-filters">
+      <div class="filter-section">
+        <div class="filter-title">Filters <span class="filter-clear">Clear all</span></div>
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Severity</div>
+        <div class="filter-check-item"><input type="checkbox" checked><div class="filter-dot" style="background:#dc2626"></div><span class="filter-check-label" style="color:var(--critical);font-weight:500">High (0.70 – 1.00)</span></div>
+        <div class="filter-check-item"><input type="checkbox" checked><div class="filter-dot" style="background:#d97706"></div><span class="filter-check-label" style="color:var(--medium);font-weight:500">Medium (0.40 – 0.69)</span></div>
+        <div class="filter-check-item"><input type="checkbox" checked><div class="filter-dot" style="background:#16a34a"></div><span class="filter-check-label" style="color:var(--green);font-weight:500">Low (0.00 – 0.39)</span></div>
+      </div>
+      <div class="filter-section">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Source Type</div>
+        <div class="filter-check-item"><input type="checkbox" checked><span class="filter-check-label">FAERS</span><span class="filter-check-count">12,341</span></div>
+        <div class="filter-check-item"><input type="checkbox" checked><span class="filter-check-label">MedWatch</span><span class="filter-check-count">3,254</span></div>
+        <div class="filter-check-item"><input type="checkbox" checked><span class="filter-check-label">Social Media</span><span class="filter-check-count">8,721</span></div>
+        <div class="filter-check-item"><input type="checkbox" checked><span class="filter-check-label">Health Forums</span><span class="filter-check-count">4,213</span></div>
+      </div>
+      <div class="filter-section">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Date Range</div>
+        <input class="filter-date-input" type="text" value="Last 7 Days">
+      </div>
+      <button class="save-filter-btn">💾 Save Filter Set</button>
+    </div>
+    <div class="triage-main">
+      <div class="triage-toolbar">
+        <span class="triage-count">Showing 1–10 of 248 results</span>
+        <button style="display:flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid var(--border2);border-radius:6px;background:var(--white);font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--sans)">↻ Refresh</button>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--text3)">Sort by</span><select class="sort-select"><option>Severity (High → Low)</option></select></div>
+      </div>
+      <div class="triage-table-header">
+        <span>Severity</span><span>Signal / Summary</span><span>Source(s)</span><span>First Detected</span><span>Score</span><span></span>
+      </div>
+      <div class="triage-rows" id="triage-rows"></div>
+      <div class="triage-pagination">
+        <div style="display:flex;gap:4px">
+          <div class="page-btn">‹</div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">2</div>
+          <div class="page-btn">3</div>
+          <div class="page-btn">4</div>
+          <div class="page-btn">…</div>
+          <div class="page-btn">25</div>
+          <div class="page-btn">›</div>
+        </div>
+        <select class="sort-select" style="font-size:12px">
+          <option>10 per page</option>
+          <option>25 per page</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 4: CASE CARD (C2)
+══════════════════════════════ -->
+<div class="screen" id="screen-case">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <span style="font-size:13px;color:var(--text3);margin-left:4px">Case ID: MS-2026-0516-00092 📋</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer">← Back to Triage Queue</div>
+    <div class="topbar-right" style="margin-left:14px">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge"></div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <div class="case-body">
+    <!-- header stats -->
+    <div class="case-header-card">
+      <div class="case-hdr-section"><div class="case-hdr-label">Drug</div><div class="case-hdr-val">Eliquis (apixaban)</div><div class="case-hdr-sub">Bristol-Myers Squibb</div></div>
+      <div class="case-hdr-section"><div class="case-hdr-label">Reported Reaction</div><div class="case-hdr-val">Internal bleeding<br><span style="font-weight:400;font-size:13px">(multiple sites)</span></div></div>
+      <div class="case-hdr-section">
+        <div class="case-hdr-label">Severity Score</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:28px;font-weight:800;color:#dc2626;font-family:var(--sans)">0.92</span><span class="badge badge-HIGH" style="font-size:12px">HIGH</span></div>
+        <div class="sev-bar" style="width:160px"><div class="sev-marker" style="left:92%"></div></div>
+        <div class="sev-bar-labels" style="width:160px"><span>0</span><span>1</span></div>
+      </div>
+      <div class="case-hdr-section"><div class="case-hdr-label">Confidence Interval</div><div class="case-hdr-val">0.88 – 0.95</div><div class="case-hdr-sub" style="color:#16a34a;font-weight:500">High confidence</div></div>
+      <div class="case-hdr-section"><div class="case-hdr-label">First Detected</div><div class="case-hdr-val" style="font-size:13px">5/15/26 10:32 AM</div><div class="case-hdr-label" style="margin-top:8px">Last Updated</div><div class="case-hdr-val" style="font-size:13px">5/16/26 2:15 PM</div></div>
+    </div>
+    <!-- demographics -->
+    <div class="case-demographics">
+      <div class="section-title">Case Details & Patient Demographics</div>
+      <div class="demo-row"><span class="demo-k">Seriousness</span><span class="serious-badge">Serious</span></div>
+      <div class="demo-row"><span class="demo-k">Seriousness Criteria</span><span class="demo-v">Hospitalization</span></div>
+      <div class="demo-row"><span class="demo-k">Report Type</span><span class="demo-v">Consumer Report</span></div>
+      <div class="demo-row"><span class="demo-k">Source Type</span><span class="demo-v">Social Media (Reddit)</span></div>
+      <div class="demo-row"><span class="demo-k">Country</span><span class="demo-v">USA</span></div>
+      <div style="margin-top:12px;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em">Patient Demographics (if available)</div>
+      <div class="demo-row"><span class="demo-k">Age / Gender</span><span class="demo-v">68 / Female</span></div>
+      <div class="demo-row"><span class="demo-k">Weight</span><span class="demo-v">Not reported</span></div>
+      <div class="demo-row"><span class="demo-k">Relevant History</span><span class="demo-v">Hypertension, Atrial fibrillation</span></div>
+      <div class="demo-row"><span class="demo-k">Concomitant Meds</span><span class="demo-v">Lisinopril, Metoprolol</span></div>
+      <div class="demo-row"><span class="demo-k">Reporter Relationship</span><span class="demo-v">Patient</span></div>
+    </div>
+    <!-- source & narrative -->
+    <div class="case-narrative">
+      <div class="section-title">Source & Narrative</div>
+      <div class="narrative-source">
+        <div class="src-reddit">R</div>
+        <div><div class="src-label">Reddit</div><div class="src-sub">r/anticoagulants · 5/15/26 9:14 PM</div></div>
+      </div>
+      <div class="narrative-text">"I've been on Eliquis for about 2 months. Yesterday I started having <span class="hl-red">nosebleeds that wouldn't stop</span>. This morning I noticed <span class="hl-red">black, tarry stools</span> and felt very <span class="hl-orange">dizzy</span> and light-headed. I went to the ER and they said my hemoglobin was low and I had <span class="hl-red">internal bleeding</span> in my stomach. They said it could be from the blood thinner. Has anyone else experienced this?"</div>
+      <div class="ai-note">💡 <span>AI highlighted terms are evidence that contributed to the severity score.</span></div>
+    </div>
+    <!-- score panel -->
+    <div class="case-score-panel">
+      <div class="section-title">Why This Score?</div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px">Top Contributing Factors (explainable AI)</div>
+      <div class="shap-bar-row"><span class="shap-label">Internal bleeding</span><div class="shap-track"><div class="shap-fill" style="width:92%;background:#dc2626"></div></div><span class="shap-val-num" style="color:#dc2626">0.42</span></div>
+      <div class="shap-bar-row"><span class="shap-label">Black/tarry stools (GI bleed)</span><div class="shap-track"><div class="shap-fill" style="width:56%;background:#ea580c"></div></div><span class="shap-val-num" style="color:#ea580c">0.21</span></div>
+      <div class="shap-bar-row"><span class="shap-label">Dizziness / light-headed</span><div class="shap-track"><div class="shap-fill" style="width:38%;background:#d97706"></div></div><span class="shap-val-num" style="color:#d97706">0.14</span></div>
+      <div class="shap-bar-row"><span class="shap-label">Low hemoglobin</span><div class="shap-track"><div class="shap-fill" style="width:24%;background:#ca8a04"></div></div><span class="shap-val-num" style="color:#ca8a04">0.09</span></div>
+      <div class="shap-bar-row"><span class="shap-label">Hospital / ER visit</span><div class="shap-track"><div class="shap-fill" style="width:16%;background:#a16207"></div></div><span class="shap-val-num" style="color:#a16207">0.06</span></div>
+      <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--accent);cursor:pointer;display:flex;justify-content:space-between">Model explanation (technical) <span>∨</span></div>
+      <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">
+        <div class="section-title">Similar High-Severity Cases</div>
+        <div class="similar-row header"><span>Case ID</span><span>Score</span><span>Date</span><span>Source</span></div>
+        <div class="similar-row"><span style="color:var(--accent);cursor:pointer;font-size:11px">MS-2026-0516-00071</span><span style="font-weight:700;color:#dc2626">0.94</span><span>5/15/26</span><span>FAERS</span></div>
+        <div class="similar-row"><span style="color:var(--accent);cursor:pointer;font-size:11px">MS-2026-0515-00112</span><span style="font-weight:700;color:#dc2626">0.91</span><span>5/15/26</span><span>MedWatch</span></div>
+        <div class="similar-row"><span style="color:var(--accent);cursor:pointer;font-size:11px">MS-2026-0514-00033</span><span style="font-weight:700;color:#ea580c">0.89</span><span>5/14/26</span><span>Reddit</span></div>
+        <div style="margin-top:8px;font-size:12px;font-weight:500;color:var(--accent);cursor:pointer">View all similar cases →</div>
+      </div>
+    </div>
+    <!-- entities -->
+    <div class="case-entities">
+      <div class="section-title">Extracted Medical Entities</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:12px">
+        <div><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px">Medical Conditions</div><div class="entity-tags"><span class="entity-tag">Internal bleeding</span><span class="entity-tag">GI bleeding</span></div></div>
+        <div><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px">Body Site</div><div class="entity-tags"><span class="entity-tag">Stomach</span><span class="entity-tag">Nose</span></div></div>
+        <div><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px">Symptoms</div><div class="entity-tags"><span class="entity-tag">Dizziness</span><span class="entity-tag">Light-headedness</span></div></div>
+        <div><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px">Laboratory</div><div class="entity-tags"><span class="entity-tag">Low hemoglobin</span></div></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px">MedDRA Mapping <span style="font-weight:400;color:var(--text3)">(confidence)</span></div>
+      <div class="entity-tags">
+        <span class="entity-tag" style="background:#fee2e2;color:#b91c1c;border-color:#fecaca">Gastrointestinal haemorrhage (0.94)</span>
+        <span class="entity-tag" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa">Epistaxis (0.90)</span>
+        <span class="entity-tag">Dizziness (0.88)</span>
+        <span class="entity-tag">Anemia (0.86)</span>
+        <span style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:500">View all</span>
+      </div>
+    </div>
+    <!-- actions -->
+    <div class="case-actions">
+      <button class="btn btn-primary">✓ Mark as Reviewed</button>
+      <button class="btn btn-outline">↑ Escalate for Expedited Review</button>
+      <button class="btn btn-outline">☆ Add to Watchlist</button>
+      <button class="btn btn-outline">⬇ Export Case</button>
+      <button class="btn btn-outline">••• More</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 5: ADR OVERVIEW (C3)
+══════════════════════════════ -->
+<div class="screen" id="screen-overview">
+  <div class="topbar">
+    <span style="font-size:13px;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:4px">← Back to Signals</span>
+    <div class="topbar-right">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge" style="background:#3b82f6">3</div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <div class="overview-topbar">
+    <div class="overview-title-row">
+      <div class="overview-drug-title">Eliquis (apixaban) — Internal bleeding (multiple sites)</div>
+      <span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:3px 10px;font-size:12px;font-weight:700">HIGH SIGNAL</span>
+      <button class="btn btn-outline" style="margin-left:auto;font-size:12px">⬇ Export Summary</button>
+    </div>
+    <div class="overview-meta">Signal ID: MS-2026-0516-00092 &nbsp;•&nbsp; First Detected: May 15, 2026 10:32 AM &nbsp;•&nbsp; Last Updated: May 16, 2026 2:15 PM</div>
+    <div class="overview-stat-row">
+      <div class="stat-cell">
+        <div class="stat-cell-lbl">Severity Score</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="stat-cell-val" style="color:#dc2626">0.92</span><span class="badge badge-HIGH">HIGH</span></div>
+        <div class="sev-bar" style="width:120px;margin-top:8px"><div class="sev-marker" style="left:92%"></div></div>
+        <div class="sev-bar-labels" style="width:120px"><span>0</span><span>1</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-lbl">Confidence Interval</div>
+        <div class="stat-cell-val" style="font-size:18px">0.88 – 0.95</div>
+        <div class="stat-cell-sub" style="color:#16a34a;font-weight:500">High confidence</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-lbl">Total Mentions</div>
+        <div class="stat-cell-val">1,842</div>
+        <div class="stat-cell-sub">Across 5 data channels</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-lbl">Unique Reports / Posts</div>
+        <div class="stat-cell-val">812</div>
+        <div class="stat-cell-sub">From 36 sources</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-lbl">Trend (30 Days)</div>
+        <div class="stat-cell-val" style="color:#dc2626">+62% ↗</div>
+        <div class="stat-cell-sub">vs prior 30 days</div>
+      </div>
+    </div>
+  </div>
+  <div class="overview-body">
+    <div class="overview-grid">
+      <div class="signal-summary-card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:10px">Signal Summary</div>
+        <div class="ss-text">Increased reporting of internal bleeding events associated with Eliquis (apixaban), including GI bleeding, black/tarry stools, and hemorrhage.</div>
+        <div class="ss-stats">
+          <div class="ss-stat"><div class="ss-stat-icon">📄</div><div class="ss-stat-val">15</div><div class="ss-stat-lbl">Formal Reports (FAERS + MedWatch)</div></div>
+          <div class="ss-stat"><div class="ss-stat-icon">💬</div><div class="ss-stat-val">1,276</div><div class="ss-stat-lbl">VoC Mentions (Social + Forums)</div></div>
+          <div class="ss-stat"><div class="ss-stat-icon">👤</div><div class="ss-stat-val">29</div><div class="ss-stat-lbl">Unique Patients (De-identified)</div></div>
+          <div class="ss-stat"><div class="ss-stat-icon" style="color:#dc2626">↗</div><div class="ss-stat-val" style="color:#dc2626">+62%</div><div class="ss-stat-lbl">Trend (30 Days) vs prior 30 days</div></div>
+        </div>
+        <div class="ai-insight">💡 <span>Multiple independent sources report similar symptoms of internal bleeding associated with Eliquis.</span></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title-row">
+          <div class="chart-title">Mentions Over Time</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#2563eb"></div>All Sources (Total)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#dc2626;border-top:2px dashed #dc2626;height:0"></div>VoC (Social+Forums)</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#16a34a;border-top:2px dashed #16a34a;height:0"></div>Formal</div>
+            </div>
+            <select class="sort-select" style="font-size:11px;padding:4px 22px 4px 8px"><option>30 Days</option></select>
+          </div>
+        </div>
+        <div class="chart-area">
+          <svg class="chart-svg" viewBox="0 0 560 140" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity="0.15"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></linearGradient>
+            </defs>
+            <!-- grid lines -->
+            <line x1="0" y1="112" x2="560" y2="112" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="0" y1="84" x2="560" y2="84" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="0" y1="56" x2="560" y2="56" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="0" y1="28" x2="560" y2="28" stroke="#e5e7eb" stroke-width="1"/>
+            <!-- y labels -->
+            <text x="0" y="115" font-size="9" fill="#9ca3af">0</text>
+            <text x="0" y="87" font-size="9" fill="#9ca3af">500</text>
+            <text x="0" y="59" font-size="9" fill="#9ca3af">1000</text>
+            <text x="0" y="31" font-size="9" fill="#9ca3af">1500</text>
+            <!-- x labels -->
+            <text x="20" y="132" font-size="9" fill="#9ca3af">Apr 17</text>
+            <text x="140" y="132" font-size="9" fill="#9ca3af">Apr 24</text>
+            <text x="268" y="132" font-size="9" fill="#9ca3af">May 1</text>
+            <text x="390" y="132" font-size="9" fill="#9ca3af">May 8</text>
+            <text x="500" y="132" font-size="9" fill="#9ca3af">May 15</text>
+            <!-- All sources blue area -->
+            <path d="M20,105 L90,98 L160,90 L230,82 L300,72 L370,58 L440,40 L520,22 L520,112 L20,112 Z" fill="url(#blueGrad)"/>
+            <polyline points="20,105 90,98 160,90 230,82 300,72 370,58 440,40 520,22" fill="none" stroke="#2563eb" stroke-width="2"/>
+            <!-- VoC red dashed -->
+            <polyline points="20,108 90,104 160,99 230,94 300,86 370,75 440,62 520,48" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <!-- Formal green dashed -->
+            <polyline points="20,110 90,109 160,108 230,107 300,106 370,104 440,102 520,100" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="sources-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:14px;font-weight:700">Sources Contributing to This Signal</div><span style="font-size:12px;font-weight:500;color:var(--accent);cursor:pointer">View all sources →</span></div>
+      <div class="sources-cards-row">
+        <div class="source-contrib-card">
+          <div class="sc-header"><div style="display:flex;align-items:center;gap:7px"><div class="src-fda">FDA</div><div><div class="sc-name">FAERS</div><div class="sc-count">12 Reports</div></div></div><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">Formal</span></div>
+          <div class="sc-sparkline"><svg width="100%" height="30" viewBox="0 0 170 30"><polyline points="0,26 30,22 60,18 90,15 120,10 150,6 170,4" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg></div>
+          <div class="sc-themes"><div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Top Reported Themes</div><div class="sc-theme-item">• Gastrointestinal hemorrhage</div><div class="sc-theme-item">• Hematemesis</div><div class="sc-theme-item">• Melena</div></div>
+          <span class="sc-view-link" onclick="alert('Opening FAERS reports...')">View FAERS reports →</span>
+        </div>
+        <div class="source-contrib-card">
+          <div class="sc-header"><div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:4px;background:#475569;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700">MW</div><div><div class="sc-name">MedWatch</div><div class="sc-count">3 Reports</div></div></div><span style="background:#dbeafe;color:#1e40af;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">Formal</span></div>
+          <div class="sc-sparkline"><svg width="100%" height="30" viewBox="0 0 170 30"><polyline points="0,26 40,23 80,20 120,16 170,13" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg></div>
+          <div class="sc-themes"><div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Top Reported Themes</div><div class="sc-theme-item">• Black, tarry stools</div><div class="sc-theme-item">• Dizziness</div><div class="sc-theme-item">• Weakness</div></div>
+          <span class="sc-view-link" onclick="alert('Opening MedWatch reports...')">View MedWatch reports →</span>
+        </div>
+        <div class="source-contrib-card">
+          <div class="sc-header"><div style="display:flex;align-items:center;gap:7px"><div class="src-reddit">R</div><div><div class="sc-name">Reddit</div><div class="sc-count">1,276 Mentions</div></div></div><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">VoC</span></div>
+          <div class="sc-sparkline"><svg width="100%" height="30" viewBox="0 0 170 30"><polyline points="0,28 20,26 40,23 60,20 90,15 120,9 145,5 170,2" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div>
+          <div class="sc-themes"><div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Top Discussed Themes</div><div class="sc-theme-item">• Nosebleeds that won't stop</div><div class="sc-theme-item">• Black or tarry stools</div><div class="sc-theme-item">• Feeling dizzy / lightheaded</div></div>
+          <span class="sc-view-link" onclick="alert('Opening Reddit posts...')">View Reddit posts →</span>
+        </div>
+        <div class="source-contrib-card">
+          <div class="sc-header"><div style="display:flex;align-items:center;gap:7px"><div class="src-fb">f</div><div><div class="sc-name">Facebook</div><div class="sc-count">842 Mentions</div></div></div><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">VoC</span></div>
+          <div class="sc-sparkline"><svg width="100%" height="30" viewBox="0 0 170 30"><polyline points="0,26 40,22 80,18 120,13 170,8" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div>
+          <div class="sc-themes"><div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Top Discussed Themes</div><div class="sc-theme-item">• Internal bleeding</div><div class="sc-theme-item">• Fatigue and weakness</div><div class="sc-theme-item">• ER visit after Eliquis</div></div>
+          <span class="sc-view-link" onclick="alert('Opening Facebook posts...')">View Facebook posts →</span>
+        </div>
+        <div class="source-contrib-card">
+          <div class="sc-header"><div style="display:flex;align-items:center;gap:7px"><div class="src-webmd">W</div><div><div class="sc-name">WebMD Forums</div><div class="sc-count">434 Mentions</div></div></div><span style="background:#fef9c3;color:#92400e;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px">VoC</span></div>
+          <div class="sc-sparkline"><svg width="100%" height="30" viewBox="0 0 170 30"><polyline points="0,25 40,21 80,17 120,13 170,10" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div>
+          <div class="sc-themes"><div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Top Discussed Themes</div><div class="sc-theme-item">• Bleeding gums</div><div class="sc-theme-item">• Bruising easily</div><div class="sc-theme-item">• Blood in stool</div></div>
+          <span class="sc-view-link" onclick="alert('Opening WebMD posts...')">View WebMD posts →</span>
+        </div>
+      </div>
+    </div>
+    <div class="similar-signals-table">
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px">Similar High-Severity Signals for Eliquis (apixaban)</div>
+      <div class="sim-row header"><span>Signal / Reaction</span><span>Severity Score</span><span>Trend (30 Days)</span><span>Mentions</span><span>First Detected</span></div>
+      <div class="sim-row"><span style="font-weight:500">Gastrointestinal hemorrhage</span><span style="font-weight:700;color:#dc2626">0.91</span><span><svg width="80" height="20" viewBox="0 0 80 20"><polyline points="0,18 20,15 40,12 60,8 80,5" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></span><span>1,324</span><span>May 10, 2026</span></div>
+      <div class="sim-row"><span style="font-weight:500">Intracranial hemorrhage</span><span style="font-weight:700;color:#ea580c">0.89</span><span><svg width="80" height="20" viewBox="0 0 80 20"><polyline points="0,16 20,14 40,12 60,10 80,7" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></span><span>654</span><span>Apr 28, 2026</span></div>
+      <div class="sim-row"><span style="font-weight:500">Anemia</span><span style="font-weight:700;color:#d97706">0.65</span><span><svg width="80" height="20" viewBox="0 0 80 20"><polyline points="0,15 20,14 40,13 60,12 80,11" fill="none" stroke="#d97706" stroke-width="1.5"/></svg></span><span>412</span><span>Apr 20, 2026</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 6: COPILOT (C4)
+══════════════════════════════ -->
+<div class="screen" id="screen-copilot">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <span style="font-size:13px;color:var(--accent);cursor:pointer">← Back to Triage Queue</span>
+    <div class="topbar-right">
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="notif-badge" style="background:#3b82f6">3</div></div>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <!-- signal header bar -->
+  <div style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0">
+      <div style="padding-right:18px;border-right:1px solid var(--border)"><div style="font-size:12px;color:var(--text3);margin-bottom:2px">Drug / Manufacturer</div><div style="font-size:16px;font-weight:800">Eliquis (apixaban)</div><div style="font-size:11px;color:var(--text3)">Bristol-Myers Squibb</div></div>
+      <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">Signal / Reaction</div><div style="font-size:14px;font-weight:700">Internal bleeding<br>(multiple sites)</div></div>
+      <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Severity Score</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px;font-weight:800;color:#dc2626">0.92</span><span class="badge badge-HIGH">HIGH</span></div><div class="sev-bar" style="width:120px"><div class="sev-marker" style="left:92%"></div></div><div class="sev-bar-labels" style="width:120px"><span>0</span><span>1</span></div></div>
+      <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">Confidence Interval</div><div style="font-size:16px;font-weight:700">0.88 – 0.95</div><div style="font-size:11px;color:#16a34a;font-weight:500">High confidence</div></div>
+      <div style="padding-left:18px"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">First Detected</div><div style="font-size:13px;font-weight:600">May 15, 2026 10:32 AM</div><div style="font-size:11px;color:var(--text3);margin-top:6px">Last Updated</div><div style="font-size:13px;font-weight:600">May 16, 2026 2:15 PM</div></div>
+    </div>
+  </div>
+  <div class="copilot-layout">
+    <div class="copilot-main">
+      <div class="copilot-tabs">
+        <div class="c-tab active">Overview</div>
+        <div class="c-tab">All Sources</div>
+        <div class="c-tab">FAERS (12)</div>
+        <div class="c-tab">MedWatch (3)</div>
+        <div class="c-tab">VoC Sources (24)</div>
+        <div class="c-tab">Similar Signals (7)</div>
+        <div class="c-tab">History</div>
+      </div>
+      <!-- overview grid -->
+      <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-bottom:16px">
+        <div class="signal-summary-card">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px">Signal Summary</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px">Multiple independent sources report increased instances of internal bleeding associated with Eliquis (apixaban), including GI bleeding, black/tarry stools, and hemorrhage.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+            <div class="ss-stat" style="padding:6px"><div class="ss-stat-icon" style="font-size:14px">📄</div><div class="ss-stat-val" style="font-size:16px">15</div><div class="ss-stat-lbl">Formal Reports</div></div>
+            <div class="ss-stat" style="padding:6px"><div class="ss-stat-icon" style="font-size:14px">💬</div><div class="ss-stat-val" style="font-size:16px">1,276</div><div class="ss-stat-lbl">VoC Mentions</div></div>
+            <div class="ss-stat" style="padding:6px"><div class="ss-stat-icon" style="font-size:14px;color:#dc2626">↗</div><div class="ss-stat-val" style="font-size:16px;color:#dc2626">+62%</div><div class="ss-stat-lbl">Trend (30 Days)</div></div>
+            <div class="ss-stat" style="padding:6px"><div class="ss-stat-icon" style="font-size:14px">👤</div><div class="ss-stat-val" style="font-size:16px">812</div><div class="ss-stat-lbl">Unique Reports</div></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title-row"><div style="font-size:13px;font-weight:700">Mentions Over Time (30 Days)</div></div>
+          <div style="font-size:10px;display:flex;gap:12px;margin-bottom:8px">
+            <div class="legend-item"><div class="legend-dot" style="background:#2563eb"></div>All Sources</div>
+            <div class="legend-item"><div style="width:14px;height:0;border-top:2px dashed #dc2626;margin-top:1px"></div>VoC</div>
+            <div class="legend-item"><div style="width:14px;height:0;border-top:2px dashed #16a34a;margin-top:1px"></div>Formal</div>
+          </div>
+          <div class="chart-area" style="height:130px">
+            <svg class="chart-svg" viewBox="0 0 400 120" preserveAspectRatio="none">
+              <line x1="0" y1="96" x2="400" y2="96" stroke="#e5e7eb" stroke-width="1"/>
+              <line x1="0" y1="64" x2="400" y2="64" stroke="#e5e7eb" stroke-width="1"/>
+              <line x1="0" y1="32" x2="400" y2="32" stroke="#e5e7eb" stroke-width="1"/>
+              <polyline points="0,90 60,82 120,72 180,60 240,46 300,30 360,18 400,10" fill="none" stroke="#2563eb" stroke-width="2"/>
+              <polyline points="0,92 60,87 120,80 180,72 240,60 300,46 360,35 400,26" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"/>
+              <polyline points="0,95 60,94 120,93 180,92 240,91 300,90 360,89 400,88" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3"/>
+              <text x="0" y="110" font-size="8" fill="#9ca3af">Apr 17</text>
+              <text x="100" y="110" font-size="8" fill="#9ca3af">Apr 24</text>
+              <text x="195" y="110" font-size="8" fill="#9ca3af">May 1</text>
+              <text x="295" y="110" font-size="8" fill="#9ca3af">May 8</text>
+              <text x="360" y="110" font-size="8" fill="#9ca3af">May 15</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- source cards compact -->
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Sources Contributing to This Signal <span style="font-size:12px;font-weight:500;color:var(--accent);cursor:pointer">View all sources →</span></div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px">
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer" onclick="alert('FAERS reports')"><div class="src-fda" style="margin:0 auto 6px">FDA</div><div style="font-size:11px;font-weight:600">FAERS</div><div style="font-size:10px;color:var(--text3)">12 Reports</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,18 15,15 30,11 45,7 60,4" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg></div></div>
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer" onclick="alert('MedWatch reports')"><div style="width:24px;height:24px;border-radius:4px;background:#475569;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;margin:0 auto 6px">MW</div><div style="font-size:11px;font-weight:600">MedWatch</div><div style="font-size:10px;color:var(--text3)">3 Reports</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,17 20,15 40,12 60,10" fill="none" stroke="#2563eb" stroke-width="1.5"/></svg></div></div>
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer" onclick="alert('Reddit posts')"><div class="src-reddit" style="margin:0 auto 6px">R</div><div style="font-size:11px;font-weight:600">Reddit</div><div style="font-size:10px;color:var(--text3)">1,276 Mentions</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,18 10,16 25,12 40,7 55,3 60,2" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div></div>
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer" onclick="alert('Facebook posts')"><div class="src-fb" style="margin:0 auto 6px">f</div><div style="font-size:11px;font-weight:600">Facebook</div><div style="font-size:10px;color:var(--text3)">842 Mentions</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,17 15,14 30,11 45,8 60,6" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div></div>
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer" onclick="alert('WebMD posts')"><div class="src-webmd" style="margin:0 auto 6px">W</div><div style="font-size:11px;font-weight:600">WebMD</div><div style="font-size:10px;color:var(--text3)">434 Mentions</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,17 20,14 40,11 60,9" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div></div>
+        <div class="card" style="padding:12px;text-align:center;cursor:pointer"><div style="width:24px;height:24px;border-radius:50%;background:#6b7280;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;margin:0 auto 6px">🌐</div><div style="font-size:11px;font-weight:600">Other Forums</div><div style="font-size:10px;color:var(--text3)">214 Mentions</div><div style="margin-top:6px"><svg width="60" height="20" viewBox="0 0 60 20"><polyline points="0,17 20,15 40,13 60,11" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg></div></div>
+      </div>
+      <!-- key evidence -->
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Key Evidence <span style="font-size:11px;color:var(--text3)">(Top Mentions)</span><span style="font-size:12px;font-weight:500;color:var(--accent);cursor:pointer">View all evidence →</span></div>
+      <div class="evidence-posts">
+        <div class="evidence-post"><div class="ep-header"><div class="src-reddit" style="width:22px;height:22px;font-size:10px">R</div><div><div style="font-size:12px;font-weight:600">Reddit</div><div class="ep-meta">r/anticoagulants · 2h ago</div></div></div><div class="ep-text">"I've been on Eliquis for 2 months. I started having <span class="hl-red">nosebleeds</span> that wouldn't stop. This morning I noticed <span class="hl-red">black, tarry stools</span> and felt very <span class="hl-orange">dizzy</span> and light-headed."</div><div class="ep-footer"><div class="ep-stat">👍 128</div><div class="ep-stat">💬 23</div></div></div>
+        <div class="evidence-post"><div class="ep-header"><div class="src-fb" style="width:22px;height:22px;font-size:10px">f</div><div><div style="font-size:12px;font-weight:600">Facebook</div><div class="ep-meta">Group: Blood Thinners Support · 5h ago</div></div></div><div class="ep-text">"My mom on Eliquis ended up in ER for <span class="hl-red">internal bleeding</span>. Watch for signs like fatigue and <span class="hl-red">dark stools</span>."</div><div class="ep-footer"><div class="ep-stat">👍 76</div><div class="ep-stat">💬 18</div></div></div>
+        <div class="evidence-post"><div class="ep-header"><div class="src-webmd" style="width:22px;height:22px;font-size:7px">W</div><div><div style="font-size:12px;font-weight:600">WebMD Forum</div><div class="ep-meta">1d ago</div></div></div><div class="ep-text">"Eliquis side effects include <span class="hl-red">internal bleeding</span>, which can cause <span class="hl-red">blood in urine or stools</span>..."</div><div class="ep-footer"><div class="ep-stat">👍 54</div><div class="ep-stat">💬 12</div></div></div>
+      </div>
+      <div class="ep-dots" style="margin-top:8px"><div class="ep-dot active"></div><div class="ep-dot"></div><div class="ep-dot"></div><div class="ep-dot"></div></div>
+    </div>
+    <!-- COPILOT PANEL -->
+    <div class="copilot-panel">
+      <div class="copilot-header">
+        <div class="copilot-title">✦ AI Reviewer Copilot</div>
+        <span class="beta-chip">Beta</span>
+      </div>
+      <div class="copilot-rec-box">
+        <div class="copilot-rec-eyebrow">🔴 Recommendation</div>
+        <div class="copilot-rec-title">Escalate for Expedited Review</div>
+        <div class="copilot-rec-sub">High severity with rising trend and consistent reports across multiple independent sources.</div>
+      </div>
+      <div class="rationale-section">
+        <div class="rationale-title">Rationale</div>
+        <div class="rationale-item"><div class="rationale-check">✓</div><span>High severity score (0.92) with high confidence</span></div>
+        <div class="rationale-item"><div class="rationale-check">✓</div><span>62% increase in mentions over the past 30 days</span></div>
+        <div class="rationale-item"><div class="rationale-check">✓</div><span>Consistent reports of internal bleeding across formal and VoC sources</span></div>
+        <div class="rationale-item"><div class="rationale-check">✓</div><span>Potential public health impact if trend continues</span></div>
+      </div>
+      <div class="suggested-actions">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Suggested Actions</div>
+        <div class="action-row" onclick="switchTab('report',document.querySelectorAll('.nav-item')[6])">↑ <span style="flex:1;margin-left:4px">Escalate to Medical Officer</span> ›</div>
+        <div class="action-row" onclick="alert('Creating safety package...')">📋 <span style="flex:1;margin-left:4px">Create Safety Signal Package</span> ›</div>
+        <div class="action-row" onclick="alert('Added to watchlist')">☆ <span style="flex:1;margin-left:4px">Add to Watchlist</span> ›</div>
+        <div class="action-row" onclick="alert('Monitoring trend...')">📈 <span style="flex:1;margin-left:4px">Monitor Trend</span> ›</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:flex;justify-content:space-between">Similar High-Severity Signals <span style="font-size:11px;font-weight:500;color:var(--accent);cursor:pointer">View all →</span></div>
+        <div class="sim-sig-row"><span style="font-weight:500;font-size:12px">Gastrointestinal hemorrhage</span><span style="font-weight:700;color:#dc2626">0.91</span><span style="color:#16a34a;font-size:11px">↑ 54%</span></div>
+        <div class="sim-sig-row"><span style="font-weight:500;font-size:12px">Intracranial hemorrhage</span><span style="font-weight:700;color:#ea580c">0.89</span><span style="color:#16a34a;font-size:11px">↑ 48%</span></div>
+        <div class="sim-sig-row"><span style="font-weight:500;font-size:12px">Anemia</span><span style="font-weight:700;color:#d97706">0.65</span><span style="color:#16a34a;font-size:11px">↑ 31%</span></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Chat with Copilot</div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" placeholder="Ask the AI about this signal, request additional analysis, or provide feedback..."></textarea>
+          <div class="chat-input-footer"><span style="font-size:10px;color:var(--text4)">Press Enter to send</span><button class="btn btn-primary" style="padding:4px 10px;font-size:11px">Send</button></div>
+        </div>
+      </div>
+      <button class="feedback-btn" onclick="alert('Feedback form opened')">💬 Provide Feedback</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     TAB 7: REPORT BUILDER (C5)
+══════════════════════════════ -->
+<div class="screen" id="screen-report">
+  <div class="topbar">
+    <div class="topbar-logo">MedSentinel</div>
+    <div style="font-size:11px;color:var(--text3)">FDA ADR Intelligence</div>
+    <div class="topbar-divider"></div>
+    <div><div class="topbar-title">ADR Report Builder</div><div class="topbar-sub">AI-extracted information ready for review and submission</div></div>
+    <div class="topbar-right">
+      <button class="btn btn-outline" onclick="alert('Draft saved!')">Save Draft</button>
+      <button class="btn btn-primary" onclick="alert('Submitted for review!')">Submit for Review →</button>
+      <div class="user-chip"><div class="user-avatar">JS</div><div><div class="user-name">Jane Smith</div><div class="user-role">Safety Evaluator</div></div></div>
+    </div>
+  </div>
+  <!-- signal header -->
+  <div style="background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;display:grid;grid-template-columns:1.2fr 1.2fr 1.4fr 1fr 1fr;gap:0">
+    <div style="padding-right:18px;border-right:1px solid var(--border)"><span style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;display:inline-block;margin-bottom:5px">HIGH SEVERITY</span><div style="font-size:16px;font-weight:800">Eliquis (apixaban)</div><div style="font-size:11px;color:var(--text3)">Bristol-Myers Squibb</div></div>
+    <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">Signal / Reaction</div><div style="font-size:14px;font-weight:700">Internal bleeding<br>(multiple sites)</div></div>
+    <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:4px">Severity Score</div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:800;color:#dc2626">0.92</span><span class="badge badge-HIGH">HIGH</span></div><div class="sev-bar" style="width:120px"><div class="sev-marker" style="left:92%"></div></div><div class="sev-bar-labels" style="width:120px"><span>0</span><span>1</span></div></div>
+    <div style="padding:0 18px;border-right:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">Signal ID</div><div style="font-size:13px;font-weight:600">MS-2026-0516-00092</div></div>
+    <div style="padding-left:18px"><div style="font-size:11px;color:var(--text3);margin-bottom:2px">First Detected</div><div style="font-size:13px;font-weight:600">May 15, 2026</div><div style="font-size:11px;color:var(--text3);margin-top:6px">Last Updated</div><div style="font-size:13px;font-weight:600">May 16, 2026 2:15 PM</div></div>
+  </div>
+  <!-- steps -->
+  <div style="padding:14px 20px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:12px;color:#16a34a">✓</div><span style="font-size:13px;font-weight:500;color:var(--text3)">Extract Information</span></div>
+    <div style="flex:1;height:1px;background:#2563eb;margin:0 14px;max-width:80px"></div>
+    <div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">2</div><span style="font-size:13px;font-weight:700;color:var(--text)">Review &amp; Edit</span></div>
+    <div style="flex:1;height:1px;background:var(--border2);margin:0 14px;max-width:80px"></div>
+    <div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:50%;background:var(--white);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text3)">3</div><span style="font-size:13px;font-weight:500;color:var(--text3)">Add Assessment</span></div>
+    <div style="flex:1;height:1px;background:var(--border2);margin:0 14px;max-width:80px"></div>
+    <div style="display:flex;align-items:center;gap:7px"><div style="width:24px;height:24px;border-radius:50%;background:var(--white);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text3)">4</div><span style="font-size:13px;font-weight:500;color:var(--text3)">Submit</span></div>
+  </div>
+  <div class="report-body">
+    <div class="report-form-area">
+      <div class="report-form-card">
+        <div class="form-card-header">
+          <div><div class="form-card-title">Structured ADR Information</div><div class="form-card-sub">Review and edit the AI-extracted information before submission.</div></div>
+          <button class="btn btn-outline" style="font-size:12px">✦ Auto-Fill from AI</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+          <!-- Primary Information -->
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text2)">Primary Information</div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Suspect Drug <span class="required">*</span></div><select class="form-select"><option>Eliquis (apixaban)</option></select></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Reporter Type <span class="required">*</span></div><select class="form-select"><option>Consumer</option></select></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Report Source <span class="required">*</span></div><select class="form-select"><option>Combined (FAERS + VoC)</option></select></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Route of Administration</div><select class="form-select"><option>Oral</option></select></div>
+            <div class="form-field"><div class="form-label">Indication (if available)</div><input class="form-input" value="Not reported"></div>
+          </div>
+          <!-- Adverse Reaction -->
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text2)">Adverse Reaction (MedDRA)</div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Primary Reaction <span class="required">*</span></div><div style="display:flex;gap:6px"><input class="form-input" value="Internal bleeding"><button class="btn btn-outline" style="font-size:11px;white-space:nowrap">Search</button></div></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Additional Reactions</div>
+              <div class="reaction-tags">
+                <span class="reaction-tag">GI bleeding <span class="reaction-tag-x">×</span></span>
+                <span class="reaction-tag">Hemorrhage <span class="reaction-tag-x">×</span></span>
+                <span class="reaction-tag">Black/tarry stools <span class="reaction-tag-x">×</span></span>
+              </div>
+              <button class="add-reaction-btn">+ Add Reaction</button>
+            </div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Seriousness <span class="required">*</span></div><select class="form-select"><option>Serious</option></select></div>
+            <div class="form-field"><div class="form-label">Seriousness Criteria <span class="required">*</span></div><select class="form-select"><option>Hospitalization</option></select></div>
+          </div>
+          <!-- Event Details -->
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text2)">Event Details</div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Onset Date</div><input class="form-input" placeholder="Select date" type="text"></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Outcome</div><select class="form-select"><option>Not recovered / not resolved</option></select></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Dechallenge</div><select class="form-select"><option>Not applicable</option></select></div>
+            <div class="form-field" style="margin-bottom:10px"><div class="form-label">Rechallenge</div><select class="form-select"><option>Not applicable</option></select></div>
+            <div class="form-field"><div class="form-label">Other Relevant Info</div><textarea class="form-input" style="height:48px;resize:none" placeholder="Add any additional details..."></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="report-form-card" style="margin-bottom:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:13px;font-weight:700">AI-Extracted Summary <span style="font-size:11px;font-weight:400;color:var(--text3)">(editable)</span></div></div>
+          <textarea class="summary-textarea">Multiple independent sources report instances of internal bleeding associated with Eliquis (apixaban), including GI bleeding, black/tarry stools, and hemorrhage. Reports include hospitalization and other serious outcomes. Trend of mentions is increasing over the past 30 days.</textarea>
+          <div class="summary-count">196 / 2000</div>
+        </div>
+        <div class="report-form-card" style="margin-bottom:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:13px;font-weight:700">Tags <span style="font-size:11px;font-weight:400;color:var(--text3)">(AI Suggested)</span></div><span style="cursor:pointer">✏️</span></div>
+          <div class="tags-area"><span class="ai-tag">Anticoagulant</span><span class="ai-tag">Bleeding</span><span class="ai-tag">GI Bleeding</span><span class="ai-tag">Serious</span><span class="ai-tag">Rising Trend</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- sidebar -->
+    <div class="report-sidebar">
+      <div class="confidence-gauge">
+        <div class="conf-lbl" style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">AI Extraction Confidence</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Overall confidence for this report</div>
+        <svg class="gauge-svg" viewBox="0 0 120 70">
+          <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round"/>
+          <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="url(#gaugeGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="16"/>
+          <defs><linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#16a34a"/><stop offset="50%" stop-color="#d97706"/><stop offset="100%" stop-color="#dc2626"/></linearGradient></defs>
+          <!-- needle -->
+          <line x1="60" y1="60" x2="100" y2="18" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="4" fill="#111827"/>
+        </svg>
+        <div style="font-size:32px;font-weight:800;color:#dc2626;margin-top:-6px">0.92</div>
+        <div style="font-size:12px;font-weight:500;color:#16a34a">High Confidence</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">Source Evidence <span style="font-weight:400;color:var(--text4)">(5 Data Sources)</span></div>
+      <div class="src-evidence-item"><div class="src-fda" style="width:22px;height:22px;font-size:8px;flex-shrink:0">FDA</div><div class="src-ev-info"><div class="src-ev-name">FAERS <span class="src-ev-type">(Formal)</span></div><div class="src-ev-count">12 reports</div></div><span class="view-link" onclick="alert('FAERS')">View</span></div>
+      <div class="src-evidence-item"><div style="width:22px;height:22px;border-radius:4px;background:#475569;display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:700;flex-shrink:0">MW</div><div class="src-ev-info"><div class="src-ev-name">MedWatch <span class="src-ev-type">(Formal)</span></div><div class="src-ev-count">3 reports</div></div><span class="view-link" onclick="alert('MedWatch')">View</span></div>
+      <div class="src-evidence-item"><div class="src-reddit" style="width:22px;height:22px;font-size:10px;flex-shrink:0">R</div><div class="src-ev-info"><div class="src-ev-name">Reddit <span class="src-ev-type">(VoC)</span></div><div class="src-ev-count">1,276 mentions</div></div><span class="view-link" onclick="alert('Reddit')">View</span></div>
+      <div class="src-evidence-item"><div class="src-fb" style="width:22px;height:22px;font-size:10px;flex-shrink:0">f</div><div class="src-ev-info"><div class="src-ev-name">Facebook <span class="src-ev-type">(VoC)</span></div><div class="src-ev-count">842 mentions</div></div><span class="view-link" onclick="alert('Facebook')">View</span></div>
+      <div class="src-evidence-item"><div class="src-webmd" style="width:22px;height:22px;font-size:7px;flex-shrink:0">W</div><div class="src-ev-info"><div class="src-ev-name">WebMD Forums <span class="src-ev-type">(VoC)</span></div><div class="src-ev-count">434 mentions</div></div><span class="view-link" onclick="alert('WebMD')">View</span></div>
+      <div style="font-size:12px;font-weight:500;color:var(--accent);cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border)">View all 36 sources →</div>
+      <div class="ready-box" style="margin-top:14px">💡 <div><div style="font-weight:600;margin-bottom:3px">Ready for Submission</div><div style="color:#166534">Once you've reviewed and confirmed the information, submit this report for FDA safety review.</div></div></div>
+    </div>
+  </div>
+  <div class="bottom-note">ⓘ All fields marked with * are required before submission.</div>
+</div>
+
+</div><!-- /main-area -->
+
+<script>
+/* ── NAV ── */
+function switchTab(id, el) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+}
+
+/* ── TRIAGE ROWS ── */
+const drugs=[
+  {score:0.92,sev:'HIGH',drug:'Eliquis (apixaban)',reaction:'Internal bleeding (multiple sites)',snippet:'Reports of internal bleeding, excessive bruising...',sources:['FDA','R','+3'],date:'5/16/26',time:'2:15 PM',scoreColor:'#dc2626',ringBorder:'#dc2626'},
+  {score:0.78,sev:'HIGH',drug:'Ozempic (semaglutide)',reaction:'Nausea, vomiting, abdominal pain, dehydration',snippet:'Multiple reports of severe GI symptoms...',sources:['FDA','W','+2'],date:'5/16/26',time:'1:47 PM',scoreColor:'#ea580c',ringBorder:'#ea580c'},
+  {score:0.61,sev:'MEDIUM',drug:'Jardiance (empagliflozin)',reaction:'UTI symptoms, frequent urination',snippet:'Frequent urination and UTI symptoms...',sources:['FDA','f','+1'],date:'5/16/26',time:'1:10 PM',scoreColor:'#d97706',ringBorder:'#d97706'},
+  {score:0.43,sev:'MEDIUM',drug:'Zoloft (sertraline)',reaction:'Increased anxiety, insomnia, restlessness',snippet:'Reports of worsening anxiety and insomnia...',sources:['FDA','R','+2'],date:'5/16/26',time:'12:32 PM',scoreColor:'#d97706',ringBorder:'#d97706'},
+  {score:0.28,sev:'LOW',drug:'Lipitor (atorvastatin)',reaction:'Muscle pain, weakness',snippet:'Muscle pain and weakness after starting...',sources:['FDA','W','+1'],date:'5/16/26',time:'11:05 AM',scoreColor:'#16a34a',ringBorder:'#16a34a'},
+];
+const srcColors={'FDA':'#1a3a6b','R':'#ff4500','W':'#0070c0','f':'#1877f2','MW':'#475569'};
+const srcLabels={'FDA':'FDA','R':'R','W':'W','f':'f','MW':'MW'};
+
+document.getElementById('triage-rows').innerHTML=drugs.map(d=>`
+  <div class="triage-row" onclick="switchTab('case',document.querySelectorAll('.nav-item')[3])">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div class="score-circle" style="border-color:${d.ringBorder}">
+        <div class="score-circle-num" style="color:${d.scoreColor}">${d.score.toFixed(2)}</div>
+        <div class="score-circle-label" style="color:${d.scoreColor}">${d.sev}</div>
+      </div>
+    </div>
+    <div>
+      <div class="drug-name">${d.drug}</div>
+      <div class="drug-reaction">${d.reaction}</div>
+      <div class="drug-snippet">${d.snippet}</div>
+    </div>
+    <div class="src-icons">${d.sources.map(s=>s.startsWith('+')?`<span class="src-more">${s}</span>`:`<div class="src-icon" style="background:${srcColors[s]||'#64748b'};color:#fff;font-size:${s==='FDA'?'7px':'11px'};font-weight:700">${s}</div>`).join('')}</div>
+    <div class="triage-date">${d.date}<br>${d.time}</div>
+    <div class="triage-score" style="color:${d.scoreColor}">${d.score.toFixed(2)}</div>
+    <div class="triage-arrow">›</div>
+  </div>`).join('');
+
+/* ── ARCH DETAIL ── */
+const AD={
+  ingest:{tag:'F1 · INGEST',title:'Data Ingestion',sub:'Multi-source real-time pipeline ingesting structured, semi-structured, and unstructured adverse event data.',rows:[{k:'Throughput',v:'High · real-time'},{k:'Sources',v:'FAERS, MedWatch, WebMD, Reddit'},{k:'Latency',v:'< 500ms',cls:'good'}],items:['Multi-source ingestion with format normalization','Real-time streaming for FAERS and MedWatch','VoC capture from WebMD, Reddit, Facebook']},
+  store:{tag:'STORAGE LAYER',title:'Unified Data Lake',sub:'Three-tier storage: raw → staged normalization → curated signal-ready data.',rows:[{k:'Raw',v:'Unprocessed ingest'},{k:'Staged',v:'Normalized + deduplicated'},{k:'Curated',v:'Feature-ready',cls:'good'}],items:['Cross-source deduplication','Immutable raw layer for full audit trail','Curated layer refreshed on each cycle']},
+  nlp:{tag:'03 · ASSESS · STEP 2',title:'NLP + MedDRA Mapping',sub:'Lay-language to clinical terminology via NER and MedDRA PT/LLT synonym mapping.',rows:[{k:'NER',v:'drugs · reactions · doses'},{k:'Mapping',v:'→ MedDRA PT / LLT'},{k:'Dedup',v:'cross-source linking'}],items:['Named entity recognition for drugs and reactions','MedDRA synonym graph for lay → clinical','Handles informal VoC language (Reddit, Facebook)']},
+  features:{tag:'03 · ASSESS · STEP 3',title:'Feature Extraction',sub:'Per-signal feature vectors across clinical, demographic, temporal, and source-credibility dimensions.',rows:[{k:'Clinical',v:'reaction terms · concomitants'},{k:'Demographic',v:'age · sex · comorbidities'},{k:'Source',v:'credibility · corroboration weight'}],items:['FAERS > MedWatch > VoC credibility weighting','Temporal latency features (onset-to-reaction)','Demographic stratification for SHAP attribution']},
+  severity:{tag:'F2 · ASSESS SEVERITY ★',title:'Severity Model',sub:'Ensemble GBDT + transformer encoder. Calibrated 0–1 score with CI.',rows:[{k:'Architecture',v:'GBDT + transformer encoder'},{k:'Calibration',v:'Platt / isotonic',cls:'good'},{k:'Precision',v:'> 85%',cls:'good'},{k:'ECE',v:'< 0.05',cls:'good'},{k:'p95 latency',v:'< 2s',cls:'good'}],items:['Confidence interval on all outputs','SHAP token-level attribution in Triage UI','Calibrated — not alarmist by design','Frozen + versioned snapshots per release','Human-in-the-loop labeling pipeline']},
+  api:{tag:'F4 · RESPOND · STEP 5',title:'Response API',sub:'Low-latency API exposing severity scores, ADR exports, and signal data.',rows:[{k:'Latency',v:'< 2s end-to-end',cls:'good'},{k:'Uptime',v:'99.5% SLA',cls:'good'},{k:'Export',v:'ADR-standard'},{k:'Interop',v:'FHIR-compatible'}],items:['Sub-2s response for real-time triage decisions','ADR export in FDA-standard format','Interoperable with existing pharmacovigilance systems']},
+  triage_ui:{tag:'F3 · DISPLAY ★',title:'Triage UI',sub:'Priority-sorted reviewer dashboard with progressive disclosure, plain-language summaries, SHAP explainability.',rows:[{k:'Layout',v:'Priority queue · severity sorted'},{k:'XAI',v:'SHAP risk factors'},{k:'Summaries',v:'Plain-language · AI-generated'},{k:'End user',v:'FDA Reviewer / Pharmacist'}],items:['Score rings with CRITICAL/HIGH/MEDIUM/LOW','CI displayed on every signal','Evidence snippets with clinical term highlighting','Actions: Escalate · Assign · Export']},
+  gov:{tag:'F5 · GOVERNANCE',title:'Governance Layer',sub:'Cross-cutting compliance: auditability, RBAC, HIPAA, model accountability.',rows:[{k:'Audit trail',v:'All predictions logged',cls:'good'},{k:'Access control',v:'RBAC enforced',cls:'good'},{k:'Regulatory',v:'HIPAA compliant',cls:'good'},{k:'Model cards',v:'Per release',cls:'good'}],items:['Immutable audit trail for all predictions','RBAC per user type (reviewer, analyst, admin)','HIPAA-compliant throughout pipeline','Bias monitoring across demographic subgroups']},
+  faers:{tag:'DATA SOURCE · FORMAL',title:'FAERS',sub:'FDA Adverse Event Reporting System. Structured mandatory adverse event reports.',rows:[{k:'Type',v:'Structured'},{k:'Authority',v:'FDA',cls:'good'},{k:'Coverage',v:'Mandatory reports'}],items:['Highest credibility — mandatory submission','Fields: drug, dose, route, outcome, demographics','Temporal metadata: onset, duration, latency']},
+  medwatch:{tag:'DATA SOURCE · FORMAL',title:'MedWatch',sub:'FDA voluntary reporting program. Semi-structured forms from patients and providers.',rows:[{k:'Type',v:'Semi-structured'},{k:'Authority',v:'FDA voluntary'},{k:'Coverage',v:'Broader than FAERS'}],items:['Voluntary from patients, consumers, providers','Mix of form fields and free-text narrative','Wider consumer-reported coverage']},
+  webmd:{tag:'DATA SOURCE · INFORMAL · VoC',title:'WebMD',sub:'Patient-reported drug reviews. Unstructured VoC requiring NLP translation.',rows:[{k:'Type',v:'Unstructured',cls:'warn'},{k:'Credibility',v:'Patient self-report',cls:'warn'},{k:'Volume',v:'High',cls:'good'}],items:['Lay-language adverse symptom descriptions','Requires NLP → MedDRA mapping before use','Valuable for signals not yet in formal reports']},
+  reddit:{tag:'DATA SOURCE · INFORMAL · VoC',title:'Reddit / Forums',sub:'Community forum posts and health forums. Early adverse event detection.',rows:[{k:'Type',v:'Unstructured',cls:'warn'},{k:'Credibility',v:'Community self-report',cls:'warn'},{k:'Volume',v:'Very high',cls:'good'}],items:['Often surfaces signals weeks before formal reports','Community corroboration boosts signal confidence','Requires aggressive NLP preprocessing + deduplication']}
+};
+function showAD(key){
+  document.querySelectorAll('.pipe-node,.src-node').forEach(n=>n.classList.remove('active'));
+  const nd=document.getElementById('node-'+key);if(nd)nd.classList.add('active');
+  const d=AD[key];if(!d)return;
+  const rH=d.rows?d.rows.map(r=>`<div class="spec-row"><span class="spec-k">${r.k}</span><span class="spec-v ${r.cls||''}">${r.v}</span></div>`).join(''):'';
+  const iH=d.items?`<ul class="attr-list">${d.items.map(i=>`<li><div class="attr-dot"></div><span>${i}</span></li>`).join('')}</ul>`:'';
+  document.getElementById('arch-detail-panel').innerHTML=`<div class="ad-tag">${d.tag}</div><div class="ad-title">${d.title}</div><div class="ad-sub">${d.sub}</div><div class="ad-section"><div class="ad-section-title">Specs</div>${rH}</div><div class="ad-section"><div class="ad-section-title">Attributes</div>${iH}</div>`;
+}
+function setFn(idx,el){document.querySelectorAll('.fn-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');showAD(['ingest','severity','triage_ui','api','gov'][idx]);}
+
+/* init */
+showAD('severity');
+document.getElementById('node-severity').classList.add('active');
+</script>
+</body>
+</html>
