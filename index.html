@@ -456,41 +456,185 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
     </div>
   </div>
   <div class="interview-content">
+
+    <!-- Header -->
     <div class="interview-header-card">
-      <div class="interview-status-chip"><div class="interview-status-dot"></div>Scheduled — Interview Pending</div>
-      <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--text)">Expert Interview: Pharmacist Perspective on ADR Surveillance</h2>
-      <p style="font-size:14px;color:var(--text3);line-height:1.6;max-width:720px">This section will document the findings from a structured interview with a licensed pharmacist. The goal is to understand real-world ADR reporting workflows, pain points, and validation of the MedSentinel concept. Results, summary, and key insights will be populated here post-interview.</p>
+      <h2 style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--text)">Expert Interview: Specialty Pharmacist Perspective on ADR Surveillance</h2>
+      <p style="font-size:14px;color:var(--text3);line-height:1.6;max-width:800px">A semi-structured interview was conducted to understand real-world ADR reporting workflows, pain points with existing tools, and expert perspective on the MedSentinel concept. Key findings directly inform the design of the triage dashboard, severity model, and AI copilot features.</p>
     </div>
-    <div class="interview-grid">
-      <div class="interview-meta-card"><div class="interview-icon" style="background:#eff6ff">👤</div><div class="interview-meta-label">Interviewee</div><div class="interview-meta-val">Licensed Pharmacist</div><div class="interview-meta-sub">Clinical setting · TBD</div></div>
-      <div class="interview-meta-card"><div class="interview-icon" style="background:#f0fdf4">📅</div><div class="interview-meta-label">Interview Date</div><div class="interview-meta-val">To Be Scheduled</div><div class="interview-meta-sub">Est. duration: 30–45 min</div></div>
-      <div class="interview-meta-card"><div class="interview-icon" style="background:#fefce8">🎯</div><div class="interview-meta-label">Research Focus</div><div class="interview-meta-val">ADR Reporting Workflow</div><div class="interview-meta-sub">Pain points · Tool validation</div></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-      <div>
-        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text)">Planned Interview Questions</h3>
-        <div class="q-placeholder"><div class="q-num">Q1</div><div class="q-text">How do you currently identify and report potential adverse drug reactions in your daily workflow?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
-        <div class="q-placeholder"><div class="q-num">Q2</div><div class="q-text">What are the biggest challenges you face with current ADR surveillance tools (e.g., FAERS, MedWatch)?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
-        <div class="q-placeholder"><div class="q-num">Q3</div><div class="q-text">How do you currently assess the severity or urgency of a potential ADR signal?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
-        <div class="q-placeholder"><div class="q-num">Q4</div><div class="q-text">Do you currently consider patient-reported sources (social media, forums) as valid signal inputs? Why or why not?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
-        <div class="q-placeholder"><div class="q-num">Q5</div><div class="q-text">How would an AI-powered severity triage tool change your workflow, if at all? What would you need to trust it?</div><div class="q-answer-box">Answer will be recorded here after interview...</div></div>
+
+    <!-- Participant cards -->
+    <div class="interview-grid" style="margin-bottom:20px">
+      <div class="interview-meta-card">
+        <div class="interview-icon" style="background:#eff6ff">🎙️</div>
+        <div class="interview-meta-label">Interviewer</div>
+        <div class="interview-meta-val">Devika Jaipur</div>
+        <div class="interview-meta-sub">Product Design Manager · Module 4, Team 9</div>
       </div>
-      <div>
-        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text)">Post-Interview Sections</h3>
-        <div class="placeholder-section"><div class="placeholder-section-icon">📋</div><div class="placeholder-section-title">Interview Summary</div><div class="placeholder-section-sub">A structured summary of key themes, quotes, and insights from the pharmacist interview will appear here after the session is conducted.</div></div>
-        <div class="placeholder-section"><div class="placeholder-section-icon">💡</div><div class="placeholder-section-title">Key Findings & Design Implications</div><div class="placeholder-section-sub">Specific findings that validate or challenge MedSentinel design decisions will be documented here, with direct links to concept directions they inform.</div></div>
-        <div class="placeholder-section" style="margin-bottom:0"><div class="placeholder-section-icon">🗣️</div><div class="placeholder-section-title">Notable Quotes</div><div class="placeholder-section-sub">Verbatim quotes from the pharmacist that capture critical user needs or pain points will be highlighted here.</div></div>
+      <div class="interview-meta-card">
+        <div class="interview-icon" style="background:#f0fdf4">👨‍⚕️</div>
+        <div class="interview-meta-label">Interviewee</div>
+        <div class="interview-meta-val">Dr. Bruce Jaipur, PharmD</div>
+        <div class="interview-meta-sub">Specialty Pharmacist · Clinical Setting</div>
       </div>
-    </div>
-    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:18px 22px;box-shadow:var(--shadow)">
-      <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">Interview Methodology</h3>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
-        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">🎙️</div><div style="font-size:12px;font-weight:600;color:var(--text)">Semi-Structured</div><div style="font-size:11px;color:var(--text3)">Open-ended questions with guided follow-ups</div></div>
-        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">⏱️</div><div style="font-size:12px;font-weight:600;color:var(--text)">30–45 Minutes</div><div style="font-size:11px;color:var(--text3)">Remote or in-person session</div></div>
-        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">🔒</div><div style="font-size:12px;font-weight:600;color:var(--text)">Confidential</div><div style="font-size:11px;color:var(--text3)">Anonymized for academic use</div></div>
-        <div style="text-align:center;padding:12px;background:var(--bg);border-radius:8px"><div style="font-size:20px;margin-bottom:6px">📊</div><div style="font-size:12px;font-weight:600;color:var(--text)">Thematic Analysis</div><div style="font-size:11px;color:var(--text3)">Coded into design implications</div></div>
+      <div class="interview-meta-card">
+        <div class="interview-icon" style="background:#fefce8">🎯</div>
+        <div class="interview-meta-label">Research Focus</div>
+        <div class="interview-meta-val">ADR Reporting Workflow</div>
+        <div class="interview-meta-sub">Pain points · Tool validation · AI readiness</div>
       </div>
     </div>
+
+    <!-- Overview summary -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow)">
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px">📋 Interview Overview &amp; Summary</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px">Dr. Jaipur currently uses two reporting systems: <strong>MedWatch</strong> for formal FDA submissions and an <strong>internal EHR system</strong> for less severe cases. He reports directly to the FDA, after which submissions are distributed to other stakeholders — however, he has never received any feedback or follow-up from the FDA after submitting. MedWatch is described as well-established but lengthy and cumbersome, with the primary barrier being the time required to complete submissions.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px">A major pain point is <strong>duplication of effort</strong> — ADR information must first be entered into the internal EHR system and then manually re-entered into MedWatch. This burden, combined with general busyness in clinical settings, means only the most severe events typically get formally reported — leaving a significant gap in surveillance data.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px">Severity assessment is <strong>informal and judgment-based</strong>, relying primarily on clinical knowledge with Lexicomp consulted for knowledge gaps. Patient-reported sources like social media are taken "with a grain of salt" — acknowledged as having some value, but lacking full clinical context. On AI tools, Dr. Jaipur sees potential in real-time monitoring that could flag overlooked ADRs based on patient chart data, but emphasized that <strong>managing alert fatigue</strong> would be critical to its usefulness.</p>
+      <!-- Key insight callouts -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">⚠️ Critical Pain Point</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Under-reporting due to workload</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5">Only severe events get formally reported. Hospitals and pharmacies are too busy for routine submissions.</div>
+        </div>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px">
+          <div style="font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">🔁 Workflow Friction</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Double data entry required</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5">ADR data entered into internal EHR must be manually re-entered into MedWatch — no integration exists.</div>
+        </div>
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px">
+          <div style="font-size:11px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">🤖 AI Opportunity</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">Real-time chart monitoring</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.5">AI could flag ADRs missed during busy periods by monitoring patient charts — but must avoid alert fatigue.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notable quotes -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow)">
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">🗣️ Notable Quotes</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:var(--bg);border-left:3px solid #d97706;padding:14px 16px;border-radius:0 8px 8px 0">
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:8px">"Every single drug has nausea, vomiting, and diarrhea as an ADR — it's hard to tell which medications <em>actually</em> cause these symptoms versus those simply reported as adverse effects during drug trials."</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3)">— On data quality &amp; signal noise</div>
+        </div>
+        <div style="background:var(--bg);border-left:3px solid #dc2626;padding:14px 16px;border-radius:0 8px 8px 0">
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:8px">"Many events go unreported because hospitals, pharmacies, and clinics are far too busy to submit each and every potential ADR report to the FDA. Only severe events get formally reported."</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3)">— On systemic under-reporting</div>
+        </div>
+        <div style="background:var(--bg);border-left:3px solid #2563eb;padding:14px 16px;border-radius:0 8px 8px 0">
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:8px">"Something that could monitor inputs in real time could potentially alert me to something I might miss — it could point out an ADR based on a patient's chart. But it would need to manage alert fatigue so that it's actually useful."</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3)">— On AI-assisted surveillance</div>
+        </div>
+        <div style="background:var(--bg);border-left:3px solid #7c3aed;padding:14px 16px;border-radius:0 8px 8px 0">
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;font-style:italic;margin-bottom:8px">"I take patient social media reports with a grain of salt — there's some validity in seeing what patients self-report, but we don't have the full clinical picture when reviewing those postings."</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3)">— On Voice of Customer (VoC) data</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q&A section -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;box-shadow:var(--shadow)">
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px">💬 Interview Questions &amp; Responses</h3>
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q1 · ADR Submission Workflow</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">How do you currently submit an ADR? Do you use multiple systems? Which do you prefer?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            Dr. Jaipur uses two systems: <strong>MedWatch</strong> for formal FDA submissions and an <strong>internal organizational system</strong> for less severe cases. He reports directly to the FDA, after which reports are distributed to other stakeholders. He describes MedWatch as well-established, but notes the submission process is long and cumbersome — the biggest barrier is finding the time to complete and submit a report, not the form itself.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q2 · MedWatch Challenges</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">What challenges do you have when interfacing with MedWatch, if any?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            The form itself is well-established and not confusing — the main challenge is <strong>duplication of effort</strong>. ADR information is first entered into the organization's internal EHR (electronic medical record) system, and then must be manually re-entered into MedWatch separately. There is no integration between the two systems. This duplication, combined with heavy clinical workloads, means many ADR reports never make it to the FDA at all.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q3 · FDA Feedback Loop</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Does he feel the FDA processes submissions in a reasonable amount of time?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            Dr. Jaipur has <strong>never received any feedback or follow-up from the FDA</strong> after submitting a report. There is no response loop — submissions go in and there is no acknowledgment or outcome communicated back to the reporter. This lack of feedback reduces motivation to report and makes it difficult to understand whether submissions are being acted upon.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q4 · Voice of Customer (VoC) Data</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Do you currently consider patient-reported sources (social media, forums) as valid signal inputs? Why or why not?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            VoC data is taken <strong>"with a grain of salt."</strong> Dr. Jaipur acknowledges some validity in seeing what patients are self-reporting, but emphasizes that full clinical context is absent — a social media post doesn't include the patient's full medical history, comorbidities, or concomitant medications. This lack of context makes it difficult to attribute the reported symptom definitively to a specific drug. He currently collects ADR information firsthand from patients or hospitals and manually translates it into medical terminology, with no systematic VoC framework in place.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q5 · Severity Assessment</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">How do you currently assess the severity or urgency of a potential ADR signal?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            Severity assessment is <strong>primarily mental and non-systematic</strong> — relying on clinical knowledge and judgment developed through training and experience. There is no consistent or streamlined process. When knowledge gaps arise, Dr. Jaipur consults the <strong>Lexicomp database</strong> for drug interaction and adverse effect information. This informal approach means severity determinations may vary and are not reproducible in the way a calibrated scoring model would be.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q6 · AI Tool Readiness</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">How would an AI-powered severity triage tool change your workflow? What would you need to trust it?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            Dr. Jaipur sees clear value in a tool that could <strong>monitor patient chart inputs in real time</strong> and alert him to ADRs he might otherwise miss during a busy shift. The AI could surface connections between a patient's current medications and reported symptoms that a human might overlook. The key requirement for trust: the tool must <strong>effectively manage alert fatigue</strong> — if it flags too many false positives or low-severity events, clinicians will begin ignoring alerts entirely, defeating the purpose. The tool's value is tied directly to the precision of its prioritization.
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="background:var(--bg);padding:12px 16px;border-bottom:1px solid var(--border)">
+            <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Q7 · Biggest Pain Point</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">If you could change one thing about ADR surveillance, what would it be?</div>
+          </div>
+          <div style="padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7">
+            Two issues stood out. First, the <strong>nausea/vomiting/diarrhea problem</strong>: these symptoms appear as listed ADRs for nearly every drug, making it nearly impossible to identify which medications genuinely cause them versus those reported incidentally during trials. Second, the <strong>systemic under-reporting problem</strong>: because hospitals and pharmacies are overwhelmed, only the most severe events get formally reported. The majority of ADR events — particularly moderate-severity ones — never reach the FDA. A system that reduces the friction of reporting (or automates it) could dramatically improve surveillance coverage.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Design implications -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px 24px;box-shadow:var(--shadow)">
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">💡 Key Findings &amp; MedSentinel Design Implications</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="display:flex;gap:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:6px;background:#eff6ff;border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
+          <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Auto-populated Report Builder (C5)</div><div style="font-size:12px;color:var(--text3);line-height:1.5">Double data entry pain point directly validates the Report Builder concept — AI auto-filling the MedWatch form from EHR data eliminates the duplication.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:6px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">⚡</div>
+          <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">Severity Model Calibration (Architecture)</div><div style="font-size:12px;color:var(--text3);line-height:1.5">The informal, judgment-based severity process confirms the need for a calibrated 0–1 score with confidence intervals — giving reviewers a reproducible, auditable signal.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:6px;background:#f0fdfa;border:1px solid #99f6e4;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🤖</div>
+          <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">AI Copilot Alert Fatigue Design (C4)</div><div style="font-size:12px;color:var(--text3);line-height:1.5">Alert fatigue is the #1 risk for AI adoption. The Copilot must surface only high-confidence, high-severity escalations and give clear rationale — not a flood of flags.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:6px;background:#fefce8;border:1px solid #fde68a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📡</div>
+          <div><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">VoC as Supplemental Signal (C3)</div><div style="font-size:12px;color:var(--text3);line-height:1.5">Skepticism about social media data validates our approach: VoC is shown alongside formal FAERS/MedWatch data as corroborating evidence, not as the primary source.</div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
